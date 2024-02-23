@@ -18,8 +18,11 @@ public class RandomSentence {
         int scope = sentences.size();
         return sentences.get(random.nextInt(scope));
     }
+    public String getSentences(int index) {
+        return sentences.get(index);
+    }
 
-    public void setSentences(List<String> sentences) {
-        this.sentences = sentences;
+    public void addSentences(String sentence) {
+        sentences.add(sentence);
     }
 }
