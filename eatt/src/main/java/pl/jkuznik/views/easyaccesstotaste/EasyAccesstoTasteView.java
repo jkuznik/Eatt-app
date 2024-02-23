@@ -16,6 +16,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import jakarta.annotation.security.PermitAll;
+import pl.jkuznik.data.RandomSentence;
 import pl.jkuznik.views.MainLayout;
 
 @PageTitle("Easy Access to Taste")
@@ -26,6 +27,8 @@ import pl.jkuznik.views.MainLayout;
 public class EasyAccesstoTasteView extends Composite<VerticalLayout> {
 
     public EasyAccesstoTasteView() {
+        RandomSentence randomSentence = new RandomSentence();
+
         HorizontalLayout layoutRow = new HorizontalLayout();
         Paragraph textLarge = new Paragraph();
         Hr hr = new Hr();
@@ -39,7 +42,7 @@ public class EasyAccesstoTasteView extends Composite<VerticalLayout> {
         layoutRow.addClassName(Gap.MEDIUM);
         layoutRow.setWidth("100%");
         layoutRow.getStyle().set("flex-grow", "1");
-        textLarge.setText("Random sentence");
+        textLarge.setText(randomSentence.getSentences());
         textLarge.setWidth("100%");
         textLarge.getStyle().set("font-size", "var(--lumo-font-size-xl)");
         link.setText("https://github.com/jkuznik/jkuznik");
