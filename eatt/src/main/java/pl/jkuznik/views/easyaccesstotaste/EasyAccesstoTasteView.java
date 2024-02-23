@@ -43,7 +43,7 @@ public class EasyAccesstoTasteView extends Composite<VerticalLayout> {
         textLarge.setWidth("100%");
         textLarge.getStyle().set("font-size", "var(--lumo-font-size-xl)");
         link.setText("https://github.com/jkuznik/jkuznik");
-        link.setHref("#");
+        link.setHref("https://github.com/jkuznik/jkuznik");
         getContent().setAlignSelf(FlexComponent.Alignment.CENTER, link);
         link.setWidth("min-content");
         getContent().add(layoutRow);
