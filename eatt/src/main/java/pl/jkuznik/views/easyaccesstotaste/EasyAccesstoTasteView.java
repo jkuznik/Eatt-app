@@ -51,6 +51,8 @@ public class EasyAccesstoTasteView extends Composite<VerticalLayout> {
         link.setWidth("min-content");
         getContent().add(layoutRow);
         layoutRow.add(textLarge);
+        getContent().add(layoutRow);
+        layoutRow.add("(Losowa sentencja albo sposób przekazu ważnych informacji firmowych)");
         getContent().add(hr);
         getContent().add(link);
     }

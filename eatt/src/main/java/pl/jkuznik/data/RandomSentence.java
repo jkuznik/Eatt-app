@@ -9,8 +9,11 @@ public class RandomSentence {
     private List<String> sentences = new ArrayList<>();
 
     public RandomSentence() {
-        sentences.add("Życie jak w madrycie");
+        sentences.add("Śniadanie to najważniejszy posiłek dnia, więc warto poświęcić mu czas.");
         sentences.add("Smacznego!");
+        sentences.add("Najlepszym sposobem na rozpoczęcie dnia jest pyszne śniadanie.");
+        sentences.add("Wielu ludzi uważa, że wspólne posiłki rodzinne są fundamentem więzi.");
+        sentences.add("Miłego dnia :)");
     }
 
     public String getSentences() {

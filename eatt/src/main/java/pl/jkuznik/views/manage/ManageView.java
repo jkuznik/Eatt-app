@@ -23,7 +23,8 @@ import java.util.List;
 @RolesAllowed("ADMIN")
 @Uses(Icon.class)
 public class ManageView extends Composite<VerticalLayout> {
-
+    
+    private String restaurantName;
     record SampleItem(String value, String label, Boolean disabled) {
     }
 
@@ -46,12 +47,12 @@ public class ManageView extends Composite<VerticalLayout> {
         chose.addClickListener(e -> {
             try {
                 if (select.getValue() != null ) {
-                    String restaurant = select.getValue().toString();
-                    int start = restaurant.indexOf("label=");
-                    restaurant = restaurant.substring(start+6);
-                    int end = restaurant.indexOf(", d");
-                    restaurant = restaurant.substring(0, end);
-                    Notification.show("Wybrano " + restaurant);
+                    restaurantName = select.getValue().toString();
+                    int start = restaurantName.indexOf("label=");
+                    restaurantName = restaurantName.substring(start+6);
+                    int end = restaurantName.indexOf(", d");
+                    restaurantName = restaurantName.substring(0, end);
+                    Notification.show("Wybrano " + restaurantName);
 //                    TUTAJ DOPISAĆ USTAWIENIE RESTAURACJI NA TRUE W BAZIE DANYCH
                 }
             } catch (ObjectOptimisticLockingFailureException exception) {
