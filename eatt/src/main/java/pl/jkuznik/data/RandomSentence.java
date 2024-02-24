@@ -12,7 +12,7 @@ public class RandomSentence {
         sentences.add("Śniadanie to najważniejszy posiłek dnia, więc warto poświęcić mu czas.");
         sentences.add("Smacznego!");
         sentences.add("Najlepszym sposobem na rozpoczęcie dnia jest pyszne śniadanie.");
-        sentences.add("Wielu ludzi uważa, że wspólne posiłki rodzinne są fundamentem więzi.");
+        sentences.add("Wielu ludzi uważa, że wspólne posiłki są podstawą dobrych relacji.");
         sentences.add("Miłego dnia :)");
     }
 
@@ -25,7 +25,7 @@ public class RandomSentence {
         return sentences.get(index);
     }
 
-    public void addSentences(String sentence) {
-        sentences.add(sentence);
+    public void clearSentences(String sentence) {
+        sentences.clear();
     }
 }
