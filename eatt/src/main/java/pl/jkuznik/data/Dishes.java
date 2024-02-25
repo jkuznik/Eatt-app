@@ -1,16 +1,28 @@
 package pl.jkuznik.data;
 
 import jakarta.persistence.Entity;
-import jakarta.validation.constraints.Email;
-import java.time.LocalDate;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 @Entity
-public class Dishes extends AbstractEntity {
+public class Dishes {
+//public class Dishes extends AbstractEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String name;
     private String description;
     private String allergens;
-    private String nutrition;
+    private String nutritions;
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -36,11 +48,11 @@ public class Dishes extends AbstractEntity {
         this.allergens = allergens;
     }
 
-    public String getNutrition() {
-        return nutrition;
+    public String getNutritions() {
+        return nutritions;
     }
 
-    public void setNutrition(String nutrition) {
-        this.nutrition = nutrition;
+    public void setNutritions(String nutritions) {
+        this.nutritions = nutritions;
     }
 }

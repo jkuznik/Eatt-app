@@ -32,43 +32,38 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import pl.jkuznik.data.SamplePerson;
-import pl.jkuznik.services.SamplePersonService;
+import pl.jkuznik.data.Dishes;
+import pl.jkuznik.services.DishesService;
 import pl.jkuznik.views.MainLayout;
 
 @PageTitle("Edit")
-@Route(value = "edit/:samplePersonID?/:action?(edit)", layout = MainLayout.class)
+@Route(value = "edit/:dishesID?/:action?(edit)", layout = MainLayout.class)
 @RolesAllowed("ADMIN")
 @Uses(Icon.class)
 public class EditView extends Div implements BeforeEnterObserver {
 
-    private final String SAMPLEPERSON_ID = "samplePersonID";
-    private final String SAMPLEPERSON_EDIT_ROUTE_TEMPLATE = "edit/%s/edit";
+    private final String DISHES_ID = "dishesID";
+    private final String DISHES_EDIT_ROUTE_TEMPLATE = "edit/%s/edit";
 
-    private final Grid<SamplePerson> grid = new Grid<>(SamplePerson.class, false);
+    private final Grid<Dishes> grid = new Grid<>(Dishes.class, false);
 
     CollaborationAvatarGroup avatarGroup;
 
-    private TextField firstName;
-    private TextField lastName;
-    private TextField email;
-    private TextField phone;
-    private DatePicker dateOfBirth;
-    private TextField occupation;
-    private TextField role;
-    private Checkbox important;
-
+    private TextField name;
+    private TextField description;
+    private TextField allergens;
+    private TextField nutritions;
     private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
 
-    private final CollaborationBinder<SamplePerson> binder;
+    private final CollaborationBinder<Dishes> binder;
 
-    private SamplePerson samplePerson;
+    private Dishes dishes;
 
-    private final SamplePersonService samplePersonService;
+    private final DishesService dishesService;
 
-    public EditView(SamplePersonService samplePersonService) {
-        this.samplePersonService = samplePersonService;
+    public EditView(DishesService dishesService) {
+        this.dishesService = dishesService;
         addClassNames("edit-view");
 
         // UserInfo is used by Collaboration Engine and is used to share details
@@ -91,23 +86,12 @@ public class EditView extends Div implements BeforeEnterObserver {
         add(splitLayout);
 
         // Configure Grid
-        grid.addColumn("firstName").setAutoWidth(true);
-        grid.addColumn("lastName").setAutoWidth(true);
-        grid.addColumn("email").setAutoWidth(true);
-        grid.addColumn("phone").setAutoWidth(true);
-        grid.addColumn("dateOfBirth").setAutoWidth(true);
-        grid.addColumn("occupation").setAutoWidth(true);
-        grid.addColumn("role").setAutoWidth(true);
-        LitRenderer<SamplePerson> importantRenderer = LitRenderer.<SamplePerson>of(
-                "<vaadin-icon icon='vaadin:${item.icon}' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: ${item.color};'></vaadin-icon>")
-                .withProperty("icon", important -> important.isImportant() ? "check" : "minus").withProperty("color",
-                        important -> important.isImportant()
-                                ? "var(--lumo-primary-text-color)"
-                                : "var(--lumo-disabled-text-color)");
+        grid.addColumn("name").setAutoWidth(true);
+        grid.addColumn("description").setAutoWidth(true);
+        grid.addColumn("allergens").setAutoWidth(true);
+        grid.addColumn("nutritions").setAutoWidth(true);
 
-        grid.addColumn(importantRenderer).setHeader("Important").setAutoWidth(true);
-
-        grid.setItems(query -> samplePersonService.list(
+        grid.setItems(query -> dishesService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
@@ -115,7 +99,7 @@ public class EditView extends Div implements BeforeEnterObserver {
         // when a row is selected or deselected, populate form
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
-                UI.getCurrent().navigate(String.format(SAMPLEPERSON_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
+                UI.getCurrent().navigate(String.format(DISHES_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
             } else {
                 clearForm();
                 UI.getCurrent().navigate(EditView.class);
@@ -123,7 +107,7 @@ public class EditView extends Div implements BeforeEnterObserver {
         });
 
         // Configure Form
-        binder = new CollaborationBinder<>(SamplePerson.class, userInfo);
+        binder = new CollaborationBinder<>(Dishes.class, userInfo);
 
         // Bind fields. This is where you'd define e.g. validation rules
 
@@ -136,11 +120,11 @@ public class EditView extends Div implements BeforeEnterObserver {
 
         save.addClickListener(e -> {
             try {
-                if (this.samplePerson == null) {
-                    this.samplePerson = new SamplePerson();
+                if (this.dishes == null) {
+                    this.dishes = new Dishes();
                 }
-                binder.writeBean(this.samplePerson);
-                samplePersonService.update(this.samplePerson);
+                binder.writeBean(this.dishes);
+                dishesService.update(this.dishes);
                 clearForm();
                 refreshGrid();
                 Notification.show("Data updated");
@@ -158,14 +142,14 @@ public class EditView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<Long> samplePersonId = event.getRouteParameters().get(SAMPLEPERSON_ID).map(Long::parseLong);
-        if (samplePersonId.isPresent()) {
-            Optional<SamplePerson> samplePersonFromBackend = samplePersonService.get(samplePersonId.get());
-            if (samplePersonFromBackend.isPresent()) {
-                populateForm(samplePersonFromBackend.get());
+        Optional<Long> dishesId = event.getRouteParameters().get(DISHES_ID).map(Long::parseLong);
+        if (dishesId.isPresent()) {
+            Optional<Dishes> dishesFromBackend = dishesService.get(dishesId.get());
+            if (dishesFromBackend.isPresent()) {
+                populateForm(dishesFromBackend.get());
             } else {
                 Notification.show(
-                        String.format("The requested samplePerson was not found, ID = %d", samplePersonId.get()), 3000,
+                        String.format("The requested dishes was not found, ID = %d", dishesId.get()), 3000,
                         Notification.Position.BOTTOM_START);
                 // when a row is selected but the data is no longer available,
                 // refresh grid
@@ -184,15 +168,11 @@ public class EditView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
-        firstName = new TextField("First Name");
-        lastName = new TextField("Last Name");
-        email = new TextField("Email");
-        phone = new TextField("Phone");
-        dateOfBirth = new DatePicker("Date Of Birth");
-        occupation = new TextField("Occupation");
-        role = new TextField("Role");
-        important = new Checkbox("Important");
-        formLayout.add(firstName, lastName, email, phone, dateOfBirth, occupation, role, important);
+        name = new TextField("Potrawa");
+        description = new TextField("Opis");
+        allergens = new TextField("Alergeny");
+        nutritions = new TextField("Wartości");
+        formLayout.add(name, description, allergens, nutritions);
 
         editorDiv.add(avatarGroup, formLayout);
         createButtonLayout(editorLayoutDiv);
@@ -225,16 +205,16 @@ public class EditView extends Div implements BeforeEnterObserver {
         populateForm(null);
     }
 
-    private void populateForm(SamplePerson value) {
-        this.samplePerson = value;
+    private void populateForm(Dishes value) {
+        this.dishes = value;
         String topic = null;
-        if (this.samplePerson != null && this.samplePerson.getId() != null) {
-            topic = "samplePerson/" + this.samplePerson.getId();
+        if (this.dishes != null && this.dishes.getId() != null) {
+            topic = "dishes/" + this.dishes.getId();
             avatarGroup.getStyle().set("visibility", "visible");
         } else {
             avatarGroup.getStyle().set("visibility", "hidden");
         }
-        binder.setTopic(topic, () -> this.samplePerson);
+        binder.setTopic(topic, () -> this.dishes);
         avatarGroup.setTopic(topic);
 
     }
