@@ -6,8 +6,6 @@ import com.vaadin.collaborationengine.UserInfo;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -18,23 +16,27 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.ValidationException;
-import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
-import java.util.Optional;
-import java.util.UUID;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import pl.jkuznik.data.Dishes;
 import pl.jkuznik.services.DishesService;
 import pl.jkuznik.views.MainLayout;
+import pl.jkuznik.views.myorder.MyOrderView;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @PageTitle("Edit")
 @Route(value = "edit/:dishesID?/:action?(edit)", layout = MainLayout.class)
@@ -84,12 +86,11 @@ public class EditView extends Div implements BeforeEnterObserver {
         createEditorLayout(splitLayout);
 
         add(splitLayout);
-
         // Configure Grid
-        grid.addColumn("name").setAutoWidth(true);
-        grid.addColumn("description").setAutoWidth(true);
-        grid.addColumn("allergens").setAutoWidth(true);
-        grid.addColumn("nutritions").setAutoWidth(true);
+        grid.addColumn("name").setAutoWidth(true).setHeader("Potrawa");
+        grid.addColumn("description").setAutoWidth(true).setHeader("Opis");
+        grid.addColumn("allergens").setAutoWidth(true).setHeader("Alergeny");
+        grid.addColumn("nutritions").setAutoWidth(true).setHeader("Wartości");
 
         grid.setItems(query -> dishesService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
@@ -160,11 +161,23 @@ public class EditView extends Div implements BeforeEnterObserver {
     }
 
     private void createEditorLayout(SplitLayout splitLayout) {
+
         Div editorLayoutDiv = new Div();
         editorLayoutDiv.setClassName("editor-layout");
 
         Div editorDiv = new Div();
+        Select select = new Select();
+        Button chose = new Button("Wybierz");
+        select.setLabel("Wybierz restaurację");
+        select.setWidth("min-content");
+        setSelectSampleData(select);
+
         editorDiv.setClassName("editor");
+        editorLayoutDiv.add(select);
+//        chose.addClickListener(e ->
+//         if (select.getValue() != null) {
+//
+//        })
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
@@ -217,5 +230,15 @@ public class EditView extends Div implements BeforeEnterObserver {
         binder.setTopic(topic, () -> this.dishes);
         avatarGroup.setTopic(topic);
 
+    }
+    private void setSelectSampleData(Select select) {
+        List<MyOrderView.SampleItem> sampleItems = new ArrayList<>();
+        sampleItems.add(new MyOrderView.SampleItem("first", "First", null));
+        sampleItems.add(new MyOrderView.SampleItem("second", "Second", null));
+        sampleItems.add(new MyOrderView.SampleItem("third", "Third", Boolean.TRUE));
+        sampleItems.add(new MyOrderView.SampleItem("fourth", "Fourth", null));
+        select.setItems(sampleItems);
+        select.setItemLabelGenerator(item -> ((MyOrderView.SampleItem) item).label());
+        select.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((MyOrderView.SampleItem) item).disabled()));
     }
 }

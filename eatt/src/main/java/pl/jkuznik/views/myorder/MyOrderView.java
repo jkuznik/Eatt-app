@@ -56,7 +56,7 @@ public class MyOrderView extends Composite<VerticalLayout> {
         avatarItem.setAvatar(new Avatar("Aria Bailey"));
     }
 
-    record SampleItem(String value, String label, Boolean disabled) {
+    public record SampleItem(String value, String label, Boolean disabled) {
     }
 
     private void setSelectSampleData(Select select) {
