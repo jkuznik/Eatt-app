@@ -29,22 +29,22 @@ public class ManageView extends Composite<VerticalLayout> {
     }
 
     public ManageView() {
+
         FormLayout formLayout2Col = new FormLayout();
         Select select = new Select();
-        Button chose = new Button();
+        Button choseButton = new Button("Wybierz");
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");
         formLayout2Col.setWidth("100%");
         select.setLabel("Wybierz restauracje do kolejnego zamówienia");
         select.setWidth("min-content");
         setSelectSampleData(select);
-        chose.setText("Wybierz");
-        chose.setWidth("min-content");
+        choseButton.setWidth("min-content");
         getContent().add(formLayout2Col);
         formLayout2Col.add(select);
-        formLayout2Col.add(chose);
+        formLayout2Col.add(choseButton);
 
-        chose.addClickListener(e -> {
+        choseButton.addClickListener(e -> {
             try {
                 if (select.getValue() != null ) {
                     restaurantName = select.getValue().toString();
