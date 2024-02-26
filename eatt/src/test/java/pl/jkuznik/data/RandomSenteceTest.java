@@ -1,7 +1,7 @@
 package pl.jkuznik.data;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import pl.jkuznik.data.randomSentence.RandomSentence;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;

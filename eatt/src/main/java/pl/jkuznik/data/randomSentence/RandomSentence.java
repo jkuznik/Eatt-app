@@ -1,4 +1,4 @@
-package pl.jkuznik.data;
+package pl.jkuznik.data.randomSentence;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +14,11 @@ public class RandomSentence {
         sentences.add("Najlepszym sposobem na rozpoczęcie dnia jest pyszne śniadanie.");
         sentences.add("Wielu ludzi uważa, że wspólne posiłki są podstawą dobrych relacji.");
         sentences.add("Miłego dnia :)");
+        sentences.add("Żona programisty- Idź do sklepu i kup chleb, a jak będą jajka to weź 10. " +
+                "W sklepie. " +
+                "- Są jajka? " +
+                "- Tak. " +
+                "- To poproszę 10 chlebów.");
     }
 
     public String getSentences() {

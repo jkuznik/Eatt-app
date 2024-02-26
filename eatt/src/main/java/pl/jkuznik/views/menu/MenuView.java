@@ -3,6 +3,7 @@ package pl.jkuznik.views.menu;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.accordion.Accordion;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
@@ -39,8 +40,7 @@ public class MenuView extends Composite<VerticalLayout> {
     private final DishesService dishesService;
     private RadioButtonGroup radioGroup = new RadioButtonGroup();
     private Accordion accordion = new Accordion();
-    private Tab tab = new Tab(accordion);
-    private Tab tab2 = new Tab();
+    private Button order = new Button("Zamów");
     public MenuView(RestaurantService restaurantService, DishesService dishesService) {
         this.restaurantService = restaurantService;
         this.dishesService = dishesService;
@@ -57,9 +57,11 @@ public class MenuView extends Composite<VerticalLayout> {
         accordion.setWidth("100%");
         getContent().add(radioGroup);
         getContent().add(accordion);
+        getContent().add(order);
         setAccordionSampleData(accordion, radioGroup);
 
         radioGroup.addValueChangeListener(event ->{
+            getContent().remove(order);
             getContent().remove(accordion);
         });
 
@@ -69,6 +71,7 @@ public class MenuView extends Composite<VerticalLayout> {
 //            accordion.remove(accordion);
             setAccordionSampleData(accordion, radioGroup);
             getContent().add(accordion);
+            getContent().add(order);
         });
     }
 
