@@ -12,7 +12,14 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import jakarta.annotation.security.PermitAll;
+import pl.jkuznik.data.Restaurant;
+import pl.jkuznik.data.RestaurantRepository;
+import pl.jkuznik.services.RestaurantService;
 import pl.jkuznik.views.MainLayout;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @PageTitle("Menu")
 @Route(value = "menu", layout = MainLayout.class)
@@ -20,12 +27,23 @@ import pl.jkuznik.views.MainLayout;
 @Uses(Icon.class)
 public class MenuView extends Composite<VerticalLayout> {
 
-    public MenuView() {
+    private final RestaurantService restaurantService;
+    public MenuView(RestaurantService restaurantService) {
+        this.restaurantService = restaurantService;
+        List<Restaurant> restaurants = restaurantService.list();
+        Optional<Restaurant> restaurantOptional = restaurants.stream()
+                .filter(Restaurant::isActive)
+                .findFirst();
+        Restaurant restaurant = restaurantOptional.orElse(null);
+        String restaurantName;
+        if (restaurant == null) restaurantName = "Nie wybrano restauracji. Zgłoś, że burczy w brzuch w administracji";
+        else restaurantName = restaurant.getName();
+
         RadioButtonGroup radioGroup = new RadioButtonGroup();
         Accordion accordion = new Accordion();
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");
-        radioGroup.setLabel("RestaurantName");
+        radioGroup.setLabel(restaurantName);
         radioGroup.setWidth("min-content");
         radioGroup.setItems("Order ID", "Product Name", "Customer", "Status");
         radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);

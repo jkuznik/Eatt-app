@@ -25,6 +25,9 @@ public class RestaurantService {
     public Restaurant update(Restaurant entity) {
         return repository.save(entity);
     }
+    public void updateAll(List<Restaurant> restaurants) {
+        repository.saveAll(restaurants);
+    }
 
     public void delete(Long id) {
         repository.deleteById(id);

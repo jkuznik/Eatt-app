@@ -13,10 +13,13 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import pl.jkuznik.data.Restaurant;
+import pl.jkuznik.services.RestaurantService;
 import pl.jkuznik.views.MainLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @PageTitle("Manage")
 @Route(value = "manage", layout = MainLayout.class)
@@ -25,35 +28,49 @@ import java.util.List;
 public class ManageView extends Composite<VerticalLayout> {
     
     private String restaurantName;
+    private final RestaurantService restaurantService;
+    Select select = new Select();
+    Button choseButton = new Button("Wybierz");
     record SampleItem(String value, String label, Boolean disabled) {
     }
 
-    public ManageView() {
+    public ManageView(RestaurantService restaurantService) {
+        this.restaurantService = restaurantService;
 
         FormLayout formLayout2Col = new FormLayout();
-        Select select = new Select();
-        Button choseButton = new Button("Wybierz");
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");
         formLayout2Col.setWidth("100%");
         select.setLabel("Wybierz restauracje do kolejnego zamówienia");
         select.setWidth("min-content");
-        setSelectSampleData(select);
+        setSelectSampleData();
         choseButton.setWidth("min-content");
         getContent().add(formLayout2Col);
         formLayout2Col.add(select);
         formLayout2Col.add(choseButton);
+        clickListener(choseButton);
+    }
+    private void setSelectSampleData() {   // NAPISAĆ TEST
+        List<Restaurant> restaurants = restaurantService.list();
+        select.setItems(restaurants);
+        select.setItemLabelGenerator(restaurant -> ((Restaurant) restaurant).getName());
+//        select.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((SampleItem) item).disabled())); // TUTAJ DOPISAĆ KOD JEŚLI UŻYTOWNIK NIE KORZYSTAŁ Z RESTAURACJI TO NIE MOŻE JEJ WYBRAĆ
+    }
 
-        choseButton.addClickListener(e -> {
+    private void clickListener(Button button) { // NAPISAĆ TEST
+        button.addClickListener(e -> {
             try {
                 if (select.getValue() != null ) {
-                    restaurantName = select.getValue().toString();
-                    int start = restaurantName.indexOf("label=");
-                    restaurantName = restaurantName.substring(start+6);
-                    int end = restaurantName.indexOf(", d");
-                    restaurantName = restaurantName.substring(0, end);
-                    Notification.show("Wybrano " + restaurantName);
-//                    TUTAJ DOPISAĆ USTAWIENIE RESTAURACJI NA TRUE W BAZIE DANYCH
+                    Restaurant restaurant = (Restaurant) select.getValue();
+                    restaurantName = restaurant.getName();
+                    Notification.show("Do następnego zamówienia wybrano " + restaurantName);
+                    List<Restaurant> restaurants = restaurantService.list();
+                    restaurants.stream()
+                            .forEach(r -> {
+                                if (r.getName().equals(restaurantName)) r.setActive(true);
+                                else r.setActive(false);
+                            });
+                    restaurantService.updateAll(restaurants);
                 }
             } catch (ObjectOptimisticLockingFailureException exception) {
                 Notification n = Notification.show(
@@ -64,19 +81,5 @@ public class ManageView extends Composite<VerticalLayout> {
                 Notification.show("Failed to update the data. Check again that all values are valid");
             }
         });
-    }
-
-//    record SampleItem(String value, String label, Boolean disabled) {
-//    }
-
-    private void setSelectSampleData(Select select) {
-        List<SampleItem> sampleItems = new ArrayList<>();
-        sampleItems.add(new SampleItem("first", "First", null));
-        sampleItems.add(new SampleItem("second", "Second", null));
-        sampleItems.add(new SampleItem("third", "Third", Boolean.TRUE));
-        sampleItems.add(new SampleItem("fourth", "Fourth", null));
-        select.setItems(sampleItems);
-        select.setItemLabelGenerator(item -> ((SampleItem) item).label());
-        select.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((SampleItem) item).disabled()));
     }
 }

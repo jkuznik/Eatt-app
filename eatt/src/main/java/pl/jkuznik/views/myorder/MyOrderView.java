@@ -70,10 +70,6 @@ public class MyOrderView extends Composite<VerticalLayout> {
 
     private void setSelectSampleData(Select select) {
         List<Restaurant> restaurants = restaurantService.list();
-//        sampleItems.add(new SampleItem("first", "First", null));
-//        sampleItems.add(new SampleItem("second", "Second", null));
-//        sampleItems.add(new SampleItem("third", "Third", Boolean.TRUE));
-//        sampleItems.add(new SampleItem("fourth", "Fourth", null));
         select.setItems(restaurants);
         select.setItemLabelGenerator(restaurant -> ((Restaurant) restaurant).getName());
 //        select.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((SampleItem) item).disabled())); // TUTAJ DOPISAĆ KOD JEŚLI UŻYTOWNIK NIE KORZYSTAŁ Z RESTAURACJI TO NIE MOŻE JEJ WYBRAĆ
