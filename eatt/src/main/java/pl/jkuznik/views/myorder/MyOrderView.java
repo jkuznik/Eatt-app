@@ -15,7 +15,12 @@ import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.data.domain.Page;
 import pl.jkuznik.components.avataritem.AvatarItem;
+import pl.jkuznik.data.Restaurant;
+import pl.jkuznik.data.RestaurantRepository;
+import pl.jkuznik.services.RestaurantService;
 import pl.jkuznik.views.MainLayout;
 
 @PageTitle("My Order")
@@ -24,7 +29,11 @@ import pl.jkuznik.views.MainLayout;
 @Uses(Icon.class)
 public class MyOrderView extends Composite<VerticalLayout> {
 
-    public MyOrderView() {
+    private final RestaurantService restaurantService;
+
+    public MyOrderView(RestaurantService restaurantService) {
+        this.restaurantService = restaurantService;
+
         AvatarItem avatarItem = new AvatarItem();
         Hr hr = new Hr();
         Paragraph textSmall = new Paragraph();
@@ -60,14 +69,14 @@ public class MyOrderView extends Composite<VerticalLayout> {
     }
 
     private void setSelectSampleData(Select select) {
-        List<SampleItem> sampleItems = new ArrayList<>();
-        sampleItems.add(new SampleItem("first", "First", null));
-        sampleItems.add(new SampleItem("second", "Second", null));
-        sampleItems.add(new SampleItem("third", "Third", Boolean.TRUE));
-        sampleItems.add(new SampleItem("fourth", "Fourth", null));
-        select.setItems(sampleItems);
-        select.setItemLabelGenerator(item -> ((SampleItem) item).label());
-        select.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((SampleItem) item).disabled()));
+        List<Restaurant> restaurants = restaurantService.list();
+//        sampleItems.add(new SampleItem("first", "First", null));
+//        sampleItems.add(new SampleItem("second", "Second", null));
+//        sampleItems.add(new SampleItem("third", "Third", Boolean.TRUE));
+//        sampleItems.add(new SampleItem("fourth", "Fourth", null));
+        select.setItems(restaurants);
+        select.setItemLabelGenerator(restaurant -> ((Restaurant) restaurant).getName());
+//        select.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((SampleItem) item).disabled())); // TUTAJ DOPISAĆ KOD JEŚLI UŻYTOWNIK NIE KORZYSTAŁ Z RESTAURACJI TO NIE MOŻE JEJ WYBRAĆ
     }
 
     private void setAvatarItemsSampleData(MultiSelectListBox multiSelectListBox) {

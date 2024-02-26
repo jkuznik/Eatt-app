@@ -104,10 +104,10 @@ insert into application_user (version, id, username,name,hashed_password,profile
 insert into user_roles (user_id, roles) values ('2', 'USER')
 insert into user_roles (user_id, roles) values ('2', 'ADMIN')
 DROP TABLE IF EXISTS restaurant
-create table restaurant ( id int primary key, name varchar(255), is_active boolean)
-insert into restaurant (id, name, is_active) values (1, 'Lolo', false)
-insert into restaurant (id, name, is_active) values (2, 'Atmosfera', true)
-insert into restaurant (id, name, is_active) values (3, 'McD', false)
+create table restaurant (version int, id int primary key, name varchar(255), is_active boolean)
+insert into restaurant (version, id, name, is_active) values (1, 1, 'Lolo', false)
+insert into restaurant (version, id, name, is_active) values (1, 2, 'Atmosfera', true)
+insert into restaurant (version, id, name, is_active) values (1, 3, 'McD', false)
 DROP TABLE IF EXISTS dishes
 --create table dishes (id int primary key, name varchar(255), description varchar(32767), allergens varchar(32767), nutritions varchar(32767),restaurant_id int, foreign key (restaurant_id) references restaurant(id))
 --insert into dishes (id, name, description, allergens, nutritions, restaurant_id) values (1, 'Grube Lolo', 'Największa, najlepsza, najdroższa pizza w resauracji', 'Gluten, śladowe ilości orzeszków ziemnych', 'Na 100 gram: Białko 12g, Tłuszcze 30, Węglowodany 58 - 530kcal', 1)
