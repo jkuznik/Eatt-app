@@ -16,6 +16,8 @@ public class Dishes {
     private String description;
     private String allergens;
     private String nutritions;
+    private int restaurantId;
+
     public Long getId() {
         return id;
     }
@@ -54,5 +56,12 @@ public class Dishes {
 
     public void setNutritions(String nutritions) {
         this.nutritions = nutritions;
+    }
+    public int getRestaurantId() {
+        return restaurantId;
+    }
+
+    public void setRestaurantId(int restaurantId) {
+        this.restaurantId = restaurantId;
     }
 }

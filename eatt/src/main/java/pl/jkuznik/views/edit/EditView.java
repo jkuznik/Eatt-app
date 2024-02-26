@@ -169,7 +169,7 @@ public class EditView extends Div implements BeforeEnterObserver {
         Select select = new Select();
         Button chose = new Button("Wybierz");
         select.setLabel("Wybierz restaurację");
-        select.setWidth("min-content");
+        select.setWidth("min-width");
         setSelectSampleData(select);
 
         editorDiv.setClassName("editor");

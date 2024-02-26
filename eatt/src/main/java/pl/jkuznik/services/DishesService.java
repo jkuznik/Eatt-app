@@ -1,5 +1,6 @@
 package pl.jkuznik.services;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -7,6 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import pl.jkuznik.data.Dishes;
 import pl.jkuznik.data.DishesRepository;
+import pl.jkuznik.data.Restaurant;
 
 @Service
 public class DishesService {
@@ -27,6 +29,9 @@ public class DishesService {
 
     public void delete(Long id) {
         repository.deleteById(id);
+    }
+    public List<Dishes> list() {
+        return repository.findAll();
     }
 
     public Page<Dishes> list(Pageable pageable) {
