@@ -10,13 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.sql.init.SqlDataSourceScriptDatabaseInitializer;
 import org.springframework.boot.autoconfigure.sql.init.SqlInitializationProperties;
-import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.context.annotation.Bean;
-import pl.jkuznik.data.SamplePersonRepository;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.List;
 
 /**
  * The entry point of the Spring Boot application.
@@ -37,7 +31,8 @@ public class Application implements AppShellConfigurator {
 
     @Bean
     SqlDataSourceScriptDatabaseInitializer dataSourceScriptDatabaseInitializer(DataSource dataSource,
-            SqlInitializationProperties properties, SamplePersonRepository repository) {
+            SqlInitializationProperties properties /*, SamplePersonRepository repository   ten argument tworzy tabele w bazie danych, inny sposób - patrz klasa User adnotacja @Table*/) {
+
         // This bean ensures the database is only initialized when empty
 //        properties.setMode(DatabaseInitializationMode.EMBEDDED);
 //        properties.setUsername("jkuznik");
@@ -51,10 +46,11 @@ public class Application implements AppShellConfigurator {
         return new SqlDataSourceScriptDatabaseInitializer(dataSource, properties) {
             @Override
             public boolean initializeDatabase() {
-                if (repository.count() == 0L) {
-                    return super.initializeDatabase();
-                }
-                return false;
+//                if (repository.count() == 0L) {
+                return super.initializeDatabase();
+//                }
+//                return false;
+//            }
             }
         };
     }

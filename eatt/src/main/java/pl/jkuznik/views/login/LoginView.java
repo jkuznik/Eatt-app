@@ -25,11 +25,11 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver {
         LoginI18n i18n = LoginI18n.createDefault();
         i18n.setHeader(new LoginI18n.Header());
         i18n.getHeader().setTitle("Eatt - inspired by lio ");
-        i18n.getHeader().setDescription("Login using user/user or admin/admin");
-        i18n.setAdditionalInformation(null);
+        i18n.getHeader().setDescription(null);
+        i18n.setAdditionalInformation("\"LIO - Lunch in Order\" is an in-house corporate application used for ordering meals by employees within the company.");
         setI18n(i18n);
 
-        setForgotPasswordButtonVisible(false);
+        setForgotPasswordButtonVisible(false);  // DODAĆ ODSYŁACZ DO KONTAKTU ZE MNĄ
         setOpened(true);
     }
 
