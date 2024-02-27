@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS restaurant
 create table restaurant (version int, id int primary key, name varchar(255), is_active boolean)
 insert into restaurant (version, id, name, is_active) values (1, 1, 'Pizzeria Lolo', false)
-insert into restaurant (version, id, name, is_active) values (1, 2, 'Atmosfera', true)
+insert into restaurant (version, id, name, is_active) values (1, 2, 'Atmosfera', false)
 insert into restaurant (version, id, name, is_active) values (1, 3, 'McD', false)
 DROP TABLE IF EXISTS meal
 create table meal (id long primary key, name varchar(255), description varchar(32767), allergens varchar(32767), nutritions varchar(32767), restaurant_id int)
@@ -12,7 +12,8 @@ insert into meal (id, name, description, allergens, nutritions, restaurant_id) v
 insert into meal (id, name, description, allergens, nutritions, restaurant_id) values (5, 'Pstrąg', 'Świeża', 'Cytryna', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 2)
 insert into meal (id, name, description, allergens, nutritions, restaurant_id) values (6, 'Frytki', 'Najdłuższe na rynku, solone', 'Gluten', 'Na 100 gram: Białko 0g, Tłuszcze 12g, Węglowodany 88g - 530kcal', 3)
 insert into meal (id, name, description, allergens, nutritions, restaurant_id) values (7, 'Hamburger', '100% (w)Ołowiu', 'Gluten, e234, e235, e236, e237,.., e15432', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 3)
-
+DROP TABLE IF EXISTS my_order
+create table my_order (id long primary key, restaurant_name varchar(255), meal_name varchar(255), application_user_id long, comment varchar(32767), rating int, is_active boolean)
 
 
 
