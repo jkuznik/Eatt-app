@@ -6,7 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-public class Dishes {
+public class Meal {
 //public class Dishes extends AbstractEntity {
 
     @Id

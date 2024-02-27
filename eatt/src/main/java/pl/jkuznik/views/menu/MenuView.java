@@ -1,7 +1,6 @@
 package pl.jkuznik.views.menu;
 
 import com.vaadin.flow.component.Composite;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.Uses;
@@ -10,24 +9,18 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
-import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.auth.AnonymousAllowed;
 import jakarta.annotation.security.PermitAll;
-import pl.jkuznik.data.AbstractEntity;
-import pl.jkuznik.data.Dishes;
+import pl.jkuznik.data.Meal;
 import pl.jkuznik.data.Restaurant;
-import pl.jkuznik.data.RestaurantRepository;
-import pl.jkuznik.services.DishesService;
+import pl.jkuznik.services.MealService;
 import pl.jkuznik.services.RestaurantService;
 import pl.jkuznik.views.MainLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 @PageTitle("Menu")
 @Route(value = "menu", layout = MainLayout.class)
@@ -37,13 +30,13 @@ public class MenuView extends Composite<VerticalLayout> {
 
     private String restaurantName;
     private final RestaurantService restaurantService;
-    private final DishesService dishesService;
+    private final MealService mealService;
     private RadioButtonGroup radioGroup = new RadioButtonGroup();
     private Accordion accordion = new Accordion();
     private Button order = new Button("Zamów");
-    public MenuView(RestaurantService restaurantService, DishesService dishesService) {
+    public MenuView(RestaurantService restaurantService, MealService mealService) {
         this.restaurantService = restaurantService;
-        this.dishesService = dishesService;
+        this.mealService = mealService;
 
 
         getContent().setWidth("100%");
@@ -52,7 +45,7 @@ public class MenuView extends Composite<VerticalLayout> {
         else restaurantName = getRestaurant().getName();
         radioGroup.setLabel(restaurantName);
         radioGroup.setWidth("min-content");
-        radioGroup.setItems(getDishesList(getRestaurant()));
+        radioGroup.setItems(getMeals(getRestaurant()));
         radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
         accordion.setWidth("100%");
         getContent().add(radioGroup);
@@ -76,18 +69,18 @@ public class MenuView extends Composite<VerticalLayout> {
     }
 
     private void setAccordionSampleData(Accordion accordion, RadioButtonGroup radioGroup) {
-        Span description = new Span(getDishes(getRestaurant(), radioGroup).getDescription());
+        Span description = new Span(getMeal(getRestaurant(), radioGroup).getDescription());
         VerticalLayout descriptionLayout = new VerticalLayout(description);
         descriptionLayout.setSpacing(false);
         descriptionLayout.setPadding(false);
-        accordion.add("Opis potrawy - " + getDishes(getRestaurant(), radioGroup).getName() , descriptionLayout);
-        Span allergens = new Span(getDishes(getRestaurant(), radioGroup).getAllergens());
+        accordion.add("Opis potrawy - " + getMeal(getRestaurant(), radioGroup).getName() , descriptionLayout);
+        Span allergens = new Span(getMeal(getRestaurant(), radioGroup).getAllergens());
         VerticalLayout allergensLayout = new VerticalLayout();
         allergensLayout.setSpacing(false);
         allergensLayout.setPadding(false);
         allergensLayout.add(allergens);
         accordion.add("Alergeny", allergensLayout);
-        Span nutritions = new Span(getDishes(getRestaurant(), radioGroup).getNutritions());
+        Span nutritions = new Span(getMeal(getRestaurant(), radioGroup).getNutritions());
         VerticalLayout nutritionsLayout = new VerticalLayout();
         nutritionsLayout.setSpacing(false);
         nutritionsLayout.setPadding(false);
@@ -104,35 +97,35 @@ public class MenuView extends Composite<VerticalLayout> {
         return restaurantOptional.orElse(null);
     }
 
-    private Dishes getDishes(Restaurant restaurant, RadioButtonGroup radioGroup) {
+    private Meal getMeal(Restaurant restaurant, RadioButtonGroup radioGroup) {
 
-        List<Dishes> dishes = dishesService.list();
+        List<Meal> meals = mealService.list();
         if (radioGroup.getValue()==null) {
-            return dishes.stream()
+            return meals.stream()
                     .filter(d -> d.getRestaurantId() == restaurant.getId())
                     .findFirst()
-                    .orElse(dishes.get(0));
+                    .orElse(meals.get(0));
         }
 
-        return dishes.stream()
+        return meals.stream()
                 .filter(d -> {
                     return (d.getRestaurantId() == restaurant.getId() &&
                             radioGroup.getValue().toString().equals(d.getName()));
                 })
                 .findAny()
-                .orElse(dishes.get(0));
+                .orElse(meals.get(0));
     }
-    private List<String> getDishesList(Restaurant restaurant) {
-        List<Dishes> dishes = dishesService.list();
-        List<String> dishesNames = new ArrayList<>();
-        List<Dishes> dishesList = dishes.stream()
+    private List<String> getMeals(Restaurant restaurant) {
+        List<Meal> meals = mealService.list();
+        List<String> mealsNames = new ArrayList<>();
+        List<Meal> mealList = meals.stream()
                 .filter(d -> d.getRestaurantId() == restaurant.getId())
                 .toList();
 
-        for (Dishes d: dishesList) {
-            dishesNames.add(d.getName());
+        for (Meal d: mealList) {
+            mealsNames.add(d.getName());
         }
-        return dishesNames;
+        return mealsNames;
     }
 
 }

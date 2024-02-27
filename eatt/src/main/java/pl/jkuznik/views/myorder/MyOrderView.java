@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import pl.jkuznik.components.avataritem.AvatarItem;
 import pl.jkuznik.data.Restaurant;
 import pl.jkuznik.data.RestaurantRepository;
+import pl.jkuznik.security.AuthenticatedUser;
 import pl.jkuznik.services.RestaurantService;
 import pl.jkuznik.views.MainLayout;
 
@@ -29,6 +30,7 @@ import pl.jkuznik.views.MainLayout;
 @Uses(Icon.class)
 public class MyOrderView extends Composite<VerticalLayout> {
 
+    private AuthenticatedUser authenticatedUser;
     private final RestaurantService restaurantService;
 
     public MyOrderView(RestaurantService restaurantService) {
@@ -44,7 +46,7 @@ public class MyOrderView extends Composite<VerticalLayout> {
         avatarItem.setWidth("min-content");
         setAvatarItemSampleData(avatarItem);
         textSmall.setText(
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
+                "feedback");
         textSmall.setWidth("100%");
         textSmall.getStyle().set("font-size", "var(--lumo-font-size-xs)");
         select.setLabel("Restauracja");
@@ -89,4 +91,5 @@ public class MyOrderView extends Composite<VerticalLayout> {
             return avatarItem;
         }));
     }
+//    private Restaurant getRestaurant
 }

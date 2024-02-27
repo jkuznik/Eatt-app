@@ -28,8 +28,8 @@ import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import pl.jkuznik.data.Dishes;
-import pl.jkuznik.services.DishesService;
+import pl.jkuznik.data.Meal;
+import pl.jkuznik.services.MealService;
 import pl.jkuznik.views.MainLayout;
 import pl.jkuznik.views.myorder.MyOrderView;
 
@@ -44,10 +44,10 @@ import java.util.UUID;
 @Uses(Icon.class)
 public class EditView extends Div implements BeforeEnterObserver {
 
-    private final String DISHES_ID = "dishesID";
-    private final String DISHES_EDIT_ROUTE_TEMPLATE = "edit/%s/edit";
+    private final String MEAL_ID = "mealID";
+    private final String MEAL_EDIT_ROUTE_TEMPLATE = "edit/%s/edit";
 
-    private final Grid<Dishes> grid = new Grid<>(Dishes.class, false);
+    private final Grid<Meal> grid = new Grid<>(Meal.class, false);
 
     CollaborationAvatarGroup avatarGroup;
 
@@ -58,14 +58,14 @@ public class EditView extends Div implements BeforeEnterObserver {
     private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
 
-    private final CollaborationBinder<Dishes> binder;
+    private final CollaborationBinder<Meal> binder;
 
-    private Dishes dishes;
+    private Meal meal;
 
-    private final DishesService dishesService;
+    private final MealService mealService;
 
-    public EditView(DishesService dishesService) {
-        this.dishesService = dishesService;
+    public EditView(MealService mealService) {
+        this.mealService = mealService;
         addClassNames("edit-view");
 
         // UserInfo is used by Collaboration Engine and is used to share details
@@ -92,7 +92,7 @@ public class EditView extends Div implements BeforeEnterObserver {
         grid.addColumn("allergens").setAutoWidth(true).setHeader("Alergeny");
         grid.addColumn("nutritions").setAutoWidth(true).setHeader("Wartości");
 
-        grid.setItems(query -> dishesService.list(
+        grid.setItems(query -> mealService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
@@ -100,7 +100,7 @@ public class EditView extends Div implements BeforeEnterObserver {
         // when a row is selected or deselected, populate form
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
-                UI.getCurrent().navigate(String.format(DISHES_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
+                UI.getCurrent().navigate(String.format(MEAL_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
             } else {
                 clearForm();
                 UI.getCurrent().navigate(EditView.class);
@@ -108,7 +108,7 @@ public class EditView extends Div implements BeforeEnterObserver {
         });
 
         // Configure Form
-        binder = new CollaborationBinder<>(Dishes.class, userInfo);
+        binder = new CollaborationBinder<>(Meal.class, userInfo);
 
         // Bind fields. This is where you'd define e.g. validation rules
 
@@ -121,11 +121,11 @@ public class EditView extends Div implements BeforeEnterObserver {
 
         save.addClickListener(e -> {
             try {
-                if (this.dishes == null) {
-                    this.dishes = new Dishes();
+                if (this.meal == null) {
+                    this.meal = new Meal();
                 }
-                binder.writeBean(this.dishes);
-                dishesService.update(this.dishes);
+                binder.writeBean(this.meal);
+                mealService.update(this.meal);
                 clearForm();
                 refreshGrid();
                 Notification.show("Data updated");
@@ -143,14 +143,14 @@ public class EditView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<Long> dishesId = event.getRouteParameters().get(DISHES_ID).map(Long::parseLong);
-        if (dishesId.isPresent()) {
-            Optional<Dishes> dishesFromBackend = dishesService.get(dishesId.get());
-            if (dishesFromBackend.isPresent()) {
-                populateForm(dishesFromBackend.get());
+        Optional<Long> mealId = event.getRouteParameters().get(MEAL_ID).map(Long::parseLong);
+        if (mealId.isPresent()) {
+            Optional<Meal> mealFromBackend = mealService.get(mealId.get());
+            if (mealFromBackend.isPresent()) {
+                populateForm(mealFromBackend.get());
             } else {
                 Notification.show(
-                        String.format("The requested dishes was not found, ID = %d", dishesId.get()), 3000,
+                        String.format("The requested dishes was not found, ID = %d", mealId.get()), 3000,
                         Notification.Position.BOTTOM_START);
                 // when a row is selected but the data is no longer available,
                 // refresh grid
@@ -174,10 +174,6 @@ public class EditView extends Div implements BeforeEnterObserver {
 
         editorDiv.setClassName("editor");
         editorLayoutDiv.add(select);
-//        chose.addClickListener(e ->
-//         if (select.getValue() != null) {
-//
-//        })
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
@@ -218,16 +214,16 @@ public class EditView extends Div implements BeforeEnterObserver {
         populateForm(null);
     }
 
-    private void populateForm(Dishes value) {
-        this.dishes = value;
+    private void populateForm(Meal value) {
+        this.meal = value;
         String topic = null;
-        if (this.dishes != null && this.dishes.getId() != null) {
-            topic = "dishes/" + this.dishes.getId();
+        if (this.meal != null && this.meal.getId() != null) {
+            topic = "meal/" + this.meal.getId();
             avatarGroup.getStyle().set("visibility", "visible");
         } else {
             avatarGroup.getStyle().set("visibility", "hidden");
         }
-        binder.setTopic(topic, () -> this.dishes);
+        binder.setTopic(topic, () -> this.meal);
         avatarGroup.setTopic(topic);
 
     }

@@ -1,10 +1,12 @@
 package pl.jkuznik.data;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import java.time.LocalDate;
 
 @Entity
+//@Table(name ="restaurant")    tworzenie nowej tabeli w bazie danych bezpośrendio z tego miejsca
 public class Restaurant extends AbstractEntity {
 
     private String name;

@@ -6,39 +6,38 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import pl.jkuznik.data.Dishes;
-import pl.jkuznik.data.DishesRepository;
-import pl.jkuznik.data.Restaurant;
+import pl.jkuznik.data.Meal;
+import pl.jkuznik.data.MealRepository;
 
 @Service
-public class DishesService {
+public class MealService {
 
-    private final DishesRepository repository;
+    private final MealRepository repository;
 
-    public DishesService(DishesRepository repository) {
+    public MealService(MealRepository repository) {
         this.repository = repository;
     }
 
-    public Optional<Dishes> get(Long id) {
+    public Optional<Meal> get(Long id) {
         return repository.findById(id);
     }
 
-    public Dishes update(Dishes entity) {
+    public Meal update(Meal entity) {
         return repository.save(entity);
     }
 
     public void delete(Long id) {
         repository.deleteById(id);
     }
-    public List<Dishes> list() {
+    public List<Meal> list() {
         return repository.findAll();
     }
 
-    public Page<Dishes> list(Pageable pageable) {
+    public Page<Meal> list(Pageable pageable) {
         return repository.findAll(pageable);
     }
 
-    public Page<Dishes> list(Pageable pageable, Specification<Dishes> filter) {
+    public Page<Meal> list(Pageable pageable, Specification<Meal> filter) {
         return repository.findAll(filter, pageable);
     }
 
