@@ -57,6 +57,7 @@ public class EditView extends Div implements BeforeEnterObserver {
     private TextField nutritions;
     private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
+    private final Button edit = new Button("Edytuj");
 
     private final CollaborationBinder<Meal> binder;
 
@@ -194,7 +195,8 @@ public class EditView extends Div implements BeforeEnterObserver {
         buttonLayout.setClassName("button-layout");
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonLayout.add(save, cancel);
+        edit.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        buttonLayout.add(save, cancel, edit);
         editorLayoutDiv.add(buttonLayout);
     }
 

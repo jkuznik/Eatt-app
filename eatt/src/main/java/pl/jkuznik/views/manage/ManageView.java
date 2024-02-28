@@ -2,6 +2,7 @@ package pl.jkuznik.views.manage;
 
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.icon.Icon;
@@ -41,6 +42,7 @@ public class ManageView extends Composite<VerticalLayout> {
         formLayout2Col.setWidth("100%");
         select.setLabel("Wybierz restauracje do kolejnego zamówienia");
         select.setWidth("min-content");
+        select.addThemeVariants(ButtonVariant.LUMO_ERROR);
         setSelectSampleData();
         choseButton.setWidth("min-content");
         getContent().add(formLayout2Col);
