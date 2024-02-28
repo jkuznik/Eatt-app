@@ -5,8 +5,8 @@ import java.util.Optional;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import pl.jkuznik.data.User;
-import pl.jkuznik.data.UserRepository;
+import pl.jkuznik.data.user.User;
+import pl.jkuznik.data.user.UserRepository;
 
 @Component
 public class AuthenticatedUser {

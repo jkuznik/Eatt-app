@@ -6,8 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import pl.jkuznik.data.Restaurant;
-import pl.jkuznik.data.RestaurantRepository;
+import pl.jkuznik.data.restaurant.Restaurant;
+import pl.jkuznik.data.restaurant.RestaurantRepository;
 
 @Service
 public class RestaurantService {

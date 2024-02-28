@@ -13,14 +13,13 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
-import java.util.ArrayList;
+
 import java.util.List;
 
-import org.springframework.data.domain.Page;
 import pl.jkuznik.components.avataritem.AvatarItem;
-import pl.jkuznik.data.Restaurant;
-import pl.jkuznik.data.RestaurantRepository;
+import pl.jkuznik.data.restaurant.Restaurant;
 import pl.jkuznik.security.AuthenticatedUser;
+import pl.jkuznik.services.MyOrderService;
 import pl.jkuznik.services.RestaurantService;
 import pl.jkuznik.views.MainLayout;
 
@@ -30,11 +29,13 @@ import pl.jkuznik.views.MainLayout;
 @Uses(Icon.class)
 public class MyOrderView extends Composite<VerticalLayout> {
 
-    private AuthenticatedUser authenticatedUser;
+    private final AuthenticatedUser authenticatedUser;
     private final RestaurantService restaurantService;
-
-    public MyOrderView(RestaurantService restaurantService) {
+    private final MyOrderService myOrderService;
+    public MyOrderView(RestaurantService restaurantService, MyOrderService myOrderService, AuthenticatedUser authenticatedUser) {
+        this.authenticatedUser = authenticatedUser;
         this.restaurantService = restaurantService;
+        this.myOrderService = myOrderService;
 
         AvatarItem avatarItem = new AvatarItem();
         Hr hr = new Hr();

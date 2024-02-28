@@ -1,19 +1,102 @@
 DROP TABLE IF EXISTS restaurant
 create table restaurant (version int, id int primary key, name varchar(255), is_active boolean)
-insert into restaurant (version, id, name, is_active) values (1, 1, 'Pizzeria Lolo', false)
+insert into restaurant (version, id, name, is_active) values (1, 1, 'Pizzeria Lolo', true)
 insert into restaurant (version, id, name, is_active) values (1, 2, 'Atmosfera', false)
 insert into restaurant (version, id, name, is_active) values (1, 3, 'McD', false)
 DROP TABLE IF EXISTS meal
-create table meal (id long primary key, name varchar(255), description varchar(32767), allergens varchar(32767), nutritions varchar(32767), restaurant_id int)
-insert into meal (id, name, description, allergens, nutritions, restaurant_id) values (1, 'Grube Lolo', 'Największa, najlepsza, najdroższa pizza w resauracji', 'Gluten, śladowe ilości orzeszków ziemnych', 'Na 100 gram: Białko 12g, Tłuszcze 30, Węglowodany 58 - 530kcal', 1)
-insert into meal (id, name, description, allergens, nutritions, restaurant_id) values (2, 'Diablo', 'Pikantna', 'Gluten, śladowe ilości orzeszków ziemnych, papryka', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 1)
-insert into meal (id, name, description, allergens, nutritions, restaurant_id) values (3, 'Margarita', 'Dla dzieci', 'Gluten, laktoza, papryka', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 1)
-insert into meal (id, name, description, allergens, nutritions, restaurant_id) values (4, 'Obiad', 'Dobry', 'Gluten, czosnek, papryka', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 2)
-insert into meal (id, name, description, allergens, nutritions, restaurant_id) values (5, 'Pstrąg', 'Świeża', 'Cytryna', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 2)
-insert into meal (id, name, description, allergens, nutritions, restaurant_id) values (6, 'Frytki', 'Najdłuższe na rynku, solone', 'Gluten', 'Na 100 gram: Białko 0g, Tłuszcze 12g, Węglowodany 88g - 530kcal', 3)
-insert into meal (id, name, description, allergens, nutritions, restaurant_id) values (7, 'Hamburger', '100% (w)Ołowiu', 'Gluten, e234, e235, e236, e237,.., e15432', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 3)
+create table meal (version int, id long primary key, name varchar(255), description varchar(32767), allergens varchar(32767), nutritions varchar(32767), restaurant_id int)
+insert into meal (version, id, name, description, allergens, nutritions, restaurant_id) values (1, 1, 'Grube Lolo', 'Największa, najlepsza, najdroższa pizza w resauracji', 'Gluten, śladowe ilości orzeszków ziemnych', 'Na 100 gram: Białko 12g, Tłuszcze 30, Węglowodany 58 - 530kcal', 1)
+insert into meal (version, id, name, description, allergens, nutritions, restaurant_id) values (1, 2, 'Diablo', 'Pikantna', 'Gluten, śladowe ilości orzeszków ziemnych, papryka', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 1)
+insert into meal (version, id, name, description, allergens, nutritions, restaurant_id) values (1, 3, 'Margarita', 'Dla dzieci', 'Gluten, laktoza, papryka', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 1)
+insert into meal (version, id, name, description, allergens, nutritions, restaurant_id) values (1, 4, 'Obiad', 'Dobry', 'Gluten, czosnek, papryka', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 2)
+insert into meal (version, id, name, description, allergens, nutritions, restaurant_id) values (1, 5, 'Pstrąg', 'Świeża', 'Cytryna', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 2)
+insert into meal (version, id, name, description, allergens, nutritions, restaurant_id) values (1, 6, 'Frytki', 'Najdłuższe na rynku, solone', 'Gluten', 'Na 100 gram: Białko 0g, Tłuszcze 12g, Węglowodany 88g - 530kcal', 3)
+insert into meal (version, id, name, description, allergens, nutritions, restaurant_id) values (1, 7, 'Hamburger', '100% (w)Ołowiu', 'Gluten, e234, e235, e236, e237,.., e15432', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 3)
 DROP TABLE IF EXISTS my_order
-create table my_order (id long primary key, restaurant_name varchar(255), meal_name varchar(255), application_user_id long, comment varchar(32767), rating int, is_active boolean)
+create table my_order (version int, id BIGINT AUTO_INCREMENT PRIMARY KEY, restaurant_name varchar(255), meal_name varchar(255), user_id bigint, comment varchar(32767), rating int, is_active boolean)
+--insert into my_order (version, id, restaurant_name, meal_name,  comment, rating, is_active) values (1, 1, 'Atmosfera', 'Pstrąg', 'Dobry ale mały', 5, false)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

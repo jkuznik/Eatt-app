@@ -1,4 +1,4 @@
-package pl.jkuznik.data;
+package pl.jkuznik.data.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
@@ -9,6 +9,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
+import pl.jkuznik.data.AbstractEntity;
+import pl.jkuznik.data.user.Role;
+
 import java.util.Set;
 
 @Entity

@@ -1,4 +1,4 @@
-package pl.jkuznik.data;
+package pl.jkuznik.data.meal;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

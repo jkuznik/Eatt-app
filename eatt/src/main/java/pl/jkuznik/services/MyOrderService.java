@@ -5,8 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import pl.jkuznik.data.MyOrder;
-import pl.jkuznik.data.MyOrderRepository;
+import pl.jkuznik.data.myOrder.MyOrder;
+import pl.jkuznik.data.myOrder.MyOrderRepository;
 
 @Service
 public class MyOrderService {

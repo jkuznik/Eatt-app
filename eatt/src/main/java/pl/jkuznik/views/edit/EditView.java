@@ -28,7 +28,7 @@ import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import pl.jkuznik.data.Meal;
+import pl.jkuznik.data.meal.Meal;
 import pl.jkuznik.services.MealService;
 import pl.jkuznik.views.MainLayout;
 import pl.jkuznik.views.myorder.MyOrderView;

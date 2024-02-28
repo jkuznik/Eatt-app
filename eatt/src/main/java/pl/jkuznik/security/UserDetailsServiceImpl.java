@@ -9,8 +9,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.jkuznik.data.User;
-import pl.jkuznik.data.UserRepository;
+import pl.jkuznik.data.user.User;
+import pl.jkuznik.data.user.UserRepository;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {

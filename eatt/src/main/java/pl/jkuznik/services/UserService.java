@@ -5,8 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import pl.jkuznik.data.User;
-import pl.jkuznik.data.UserRepository;
+import pl.jkuznik.data.user.User;
+import pl.jkuznik.data.user.UserRepository;
 
 @Service
 public class UserService {

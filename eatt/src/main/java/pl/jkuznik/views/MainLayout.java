@@ -22,7 +22,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import java.io.ByteArrayInputStream;
 import java.util.Optional;
 import org.vaadin.lineawesome.LineAwesomeIcon;
-import pl.jkuznik.data.User;
+import pl.jkuznik.data.user.User;
 import pl.jkuznik.security.AuthenticatedUser;
 import pl.jkuznik.views.easyaccesstotaste.EasyAccesstoTasteView;
 import pl.jkuznik.views.edit.EditView;

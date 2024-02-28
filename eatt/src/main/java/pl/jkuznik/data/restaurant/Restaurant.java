@@ -1,8 +1,10 @@
-package pl.jkuznik.data;
+package pl.jkuznik.data.restaurant;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
+import pl.jkuznik.data.AbstractEntity;
+
 import java.time.LocalDate;
 
 @Entity

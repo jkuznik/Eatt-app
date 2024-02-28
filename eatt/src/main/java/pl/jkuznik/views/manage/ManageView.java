@@ -13,13 +13,11 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import pl.jkuznik.data.Restaurant;
+import pl.jkuznik.data.restaurant.Restaurant;
 import pl.jkuznik.services.RestaurantService;
 import pl.jkuznik.views.MainLayout;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @PageTitle("Manage")
 @Route(value = "manage", layout = MainLayout.class)
