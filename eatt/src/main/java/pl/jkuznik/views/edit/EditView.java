@@ -1,11 +1,18 @@
 package pl.jkuznik.views.edit;
 
+import jakarta.annotation.security.RolesAllowed;
+import pl.jkuznik.data.SamplePerson;
+import pl.jkuznik.services.SamplePersonService;
+import pl.jkuznik.views.MainLayout;
+
 import com.vaadin.collaborationengine.CollaborationAvatarGroup;
 import com.vaadin.collaborationengine.CollaborationBinder;
 import com.vaadin.collaborationengine.UserInfo;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -16,57 +23,55 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
-import jakarta.annotation.security.RolesAllowed;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import pl.jkuznik.data.meal.Meal;
-import pl.jkuznik.services.MealService;
-import pl.jkuznik.views.MainLayout;
-import pl.jkuznik.views.myorder.MyOrderView;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 @PageTitle("Edit")
-@Route(value = "edit/:dishesID?/:action?(edit)", layout = MainLayout.class)
+@Route(value = "collaborative-master-detail/:samplePersonID?/:action?(edit)", layout = MainLayout.class)
 @RolesAllowed("ADMIN")
 @Uses(Icon.class)
 public class EditView extends Div implements BeforeEnterObserver {
 
-    private final String MEAL_ID = "mealID";
-    private final String MEAL_EDIT_ROUTE_TEMPLATE = "edit/%s/edit";
+    private final String SAMPLEPERSON_ID = "samplePersonID";
+    private final String SAMPLEPERSON_EDIT_ROUTE_TEMPLATE = "collaborative-master-detail/%s/edit";
 
-    private final Grid<Meal> grid = new Grid<>(Meal.class, false);
+    private final Grid<SamplePerson> grid = new Grid<>(SamplePerson.class, false);
 
     CollaborationAvatarGroup avatarGroup;
 
-    private TextField name;
-    private TextField description;
-    private TextField allergens;
-    private TextField nutritions;
-    private final Button cancel = new Button("Cancel");
-    private final Button save = new Button("Save");
+    private TextField firstName;
+    private TextField lastName;
+    private TextField email;
+    private TextField phone;
+    private DatePicker dateOfBirth;
+    private TextField occupation;
+    private TextField role;
+    private Checkbox important;
+
+    private final Button cancel = new Button("Anuluj");
+    private final Button save = new Button("Zapisz");
     private final Button edit = new Button("Edytuj");
 
-    private final CollaborationBinder<Meal> binder;
+    private final CollaborationBinder<SamplePerson> binder;
 
-    private Meal meal;
+    private SamplePerson samplePerson;
 
-    private final MealService mealService;
+    private final SamplePersonService samplePersonService;
 
-    public EditView(MealService mealService) {
-        this.mealService = mealService;
+    public EditView(SamplePersonService samplePersonService) {
+        this.samplePersonService = samplePersonService;
         addClassNames("edit-view");
 
         // UserInfo is used by Collaboration Engine and is used to share details
@@ -87,13 +92,25 @@ public class EditView extends Div implements BeforeEnterObserver {
         createEditorLayout(splitLayout);
 
         add(splitLayout);
-        // Configure Grid
-        grid.addColumn("name").setAutoWidth(true).setHeader("Potrawa");
-        grid.addColumn("description").setAutoWidth(true).setHeader("Opis");
-        grid.addColumn("allergens").setAutoWidth(true).setHeader("Alergeny");
-        grid.addColumn("nutritions").setAutoWidth(true).setHeader("Wartości");
 
-        grid.setItems(query -> mealService.list(
+        // Configure Grid
+        grid.addColumn("firstName").setAutoWidth(true);
+        grid.addColumn("lastName").setAutoWidth(true);
+        grid.addColumn("email").setAutoWidth(true);
+        grid.addColumn("phone").setAutoWidth(true);
+        grid.addColumn("dateOfBirth").setAutoWidth(true);
+        grid.addColumn("occupation").setAutoWidth(true);
+        grid.addColumn("role").setAutoWidth(true);
+        LitRenderer<SamplePerson> importantRenderer = LitRenderer.<SamplePerson>of(
+                "<vaadin-icon icon='vaadin:${item.icon}' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: ${item.color};'></vaadin-icon>")
+                .withProperty("icon", important -> important.isImportant() ? "check" : "minus").withProperty("color",
+                        important -> important.isImportant()
+                                ? "var(--lumo-primary-text-color)"
+                                : "var(--lumo-disabled-text-color)");
+
+        grid.addColumn(importantRenderer).setHeader("Important").setAutoWidth(true);
+
+        grid.setItems(query -> samplePersonService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
@@ -101,7 +118,7 @@ public class EditView extends Div implements BeforeEnterObserver {
         // when a row is selected or deselected, populate form
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
-                UI.getCurrent().navigate(String.format(MEAL_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
+                UI.getCurrent().navigate(String.format(SAMPLEPERSON_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
             } else {
                 clearForm();
                 UI.getCurrent().navigate(EditView.class);
@@ -109,7 +126,7 @@ public class EditView extends Div implements BeforeEnterObserver {
         });
 
         // Configure Form
-        binder = new CollaborationBinder<>(Meal.class, userInfo);
+        binder = new CollaborationBinder<>(SamplePerson.class, userInfo);
 
         // Bind fields. This is where you'd define e.g. validation rules
 
@@ -122,11 +139,11 @@ public class EditView extends Div implements BeforeEnterObserver {
 
         save.addClickListener(e -> {
             try {
-                if (this.meal == null) {
-                    this.meal = new Meal();
+                if (this.samplePerson == null) {
+                    this.samplePerson = new SamplePerson();
                 }
-                binder.writeBean(this.meal);
-                mealService.update(this.meal);
+                binder.writeBean(this.samplePerson);
+                samplePersonService.update(this.samplePerson);
                 clearForm();
                 refreshGrid();
                 Notification.show("Data updated");
@@ -144,14 +161,14 @@ public class EditView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<Long> mealId = event.getRouteParameters().get(MEAL_ID).map(Long::parseLong);
-        if (mealId.isPresent()) {
-            Optional<Meal> mealFromBackend = mealService.get(mealId.get());
-            if (mealFromBackend.isPresent()) {
-                populateForm(mealFromBackend.get());
+        Optional<Long> samplePersonId = event.getRouteParameters().get(SAMPLEPERSON_ID).map(Long::parseLong);
+        if (samplePersonId.isPresent()) {
+            Optional<SamplePerson> samplePersonFromBackend = samplePersonService.get(samplePersonId.get());
+            if (samplePersonFromBackend.isPresent()) {
+                populateForm(samplePersonFromBackend.get());
             } else {
                 Notification.show(
-                        String.format("The requested dishes was not found, ID = %d", mealId.get()), 3000,
+                        String.format("The requested samplePerson was not found, ID = %d", samplePersonId.get()), 3000,
                         Notification.Position.BOTTOM_START);
                 // when a row is selected but the data is no longer available,
                 // refresh grid
@@ -162,27 +179,23 @@ public class EditView extends Div implements BeforeEnterObserver {
     }
 
     private void createEditorLayout(SplitLayout splitLayout) {
-
         Div editorLayoutDiv = new Div();
         editorLayoutDiv.setClassName("editor-layout");
 
         Div editorDiv = new Div();
-        Select select = new Select();
-        Button chose = new Button("Wybierz");
-        select.setLabel("Wybierz restaurację");
-        select.setWidth("min-width");
-        setSelectSampleData(select);
-
         editorDiv.setClassName("editor");
-        editorLayoutDiv.add(select);
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
-        name = new TextField("Potrawa");
-        description = new TextField("Opis");
-        allergens = new TextField("Alergeny");
-        nutritions = new TextField("Wartości");
-        formLayout.add(name, description, allergens, nutritions);
+        firstName = new TextField("First Name");
+        lastName = new TextField("Last Name");
+        email = new TextField("Email");
+        phone = new TextField("Phone");
+        dateOfBirth = new DatePicker("Date Of Birth");
+        occupation = new TextField("Occupation");
+        role = new TextField("Role");
+        important = new Checkbox("Important");
+        formLayout.add(firstName, lastName, email, phone, dateOfBirth, occupation, role, important);
 
         editorDiv.add(avatarGroup, formLayout);
         createButtonLayout(editorLayoutDiv);
@@ -216,27 +229,17 @@ public class EditView extends Div implements BeforeEnterObserver {
         populateForm(null);
     }
 
-    private void populateForm(Meal value) {
-        this.meal = value;
+    private void populateForm(SamplePerson value) {
+        this.samplePerson = value;
         String topic = null;
-        if (this.meal != null && this.meal.getId() != null) {
-            topic = "meal/" + this.meal.getId();
+        if (this.samplePerson != null && this.samplePerson.getId() != null) {
+            topic = "samplePerson/" + this.samplePerson.getId();
             avatarGroup.getStyle().set("visibility", "visible");
         } else {
             avatarGroup.getStyle().set("visibility", "hidden");
         }
-        binder.setTopic(topic, () -> this.meal);
+        binder.setTopic(topic, () -> this.samplePerson);
         avatarGroup.setTopic(topic);
 
-    }
-    private void setSelectSampleData(Select select) {
-        List<MyOrderView.SampleItem> sampleItems = new ArrayList<>();
-        sampleItems.add(new MyOrderView.SampleItem("first", "First", null));
-        sampleItems.add(new MyOrderView.SampleItem("second", "Second", null));
-        sampleItems.add(new MyOrderView.SampleItem("third", "Third", Boolean.TRUE));
-        sampleItems.add(new MyOrderView.SampleItem("fourth", "Fourth", null));
-        select.setItems(sampleItems);
-        select.setItemLabelGenerator(item -> ((MyOrderView.SampleItem) item).label());
-        select.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((MyOrderView.SampleItem) item).disabled()));
     }
 }

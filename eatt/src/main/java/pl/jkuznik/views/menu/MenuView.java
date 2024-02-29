@@ -81,24 +81,13 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
         if (any.isEmpty()) {
             order.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             getContent().add(order);
-//            orderClickListener(order);
         }
         else {
             getContent().add(change);
             absent.addThemeVariants(ButtonVariant.LUMO_ERROR);
             getContent().add(absent);
-//            changeClickListener(change);
-//            absentClickListener(absent);
         }
 
-//        order.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-//        getContent().add(order);
-//        getContent().add(change);
-//        absent.addThemeVariants(ButtonVariant.LUMO_ERROR);
-//        getContent().add(absent);
-//        orderClickListener(order);
-//        changeClickListener(change);
-//        absentClickListener(absent);
 
     radioGroup.addValueChangeListener(event -> {
         // dopisać dynamiczne usuwanie/odświeżanie 'accordion'
@@ -203,11 +192,8 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
                     n.addThemeVariants(NotificationVariant.LUMO_ERROR);
                     getContent().remove(order);
                     getContent().add(change);
-//                    changeClickListener(change);
                     absent.addThemeVariants(ButtonVariant.LUMO_ERROR);
                     getContent().add(absent);
-//                    absentClickListener(absent);
-
 
                 } else Notification.show("Nie wybrano żadnej potrawy ");
             } catch (ObjectOptimisticLockingFailureException exception) {
@@ -268,17 +254,17 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
     private void absentClickListener(Button button) {
         button.addClickListener(e -> {
             try {
-                if (radioGroup.getValue() != null) {
                     List<MyOrder> actualMyOrders = getActualMyOrders();
                     User loggedUser = getLoggedUser();
+                    String cancelOrder;
 
                     long index = actualMyOrders.stream()
-                            .filter(myOrder -> myOrder.getUserId() == loggedUser.getId())
-                            .filter(MyOrder::isActive)
+                            .filter(myOrder -> myOrder.getUserId() == loggedUser.getId() && myOrder.isActive())
                             .mapToLong(MyOrder::getId)
                             .findFirst()
                             .getAsLong();
 
+                    cancelOrder = myOrderService.get(index).orElse(null).getMealName();
                     myOrderService.delete(index);
                     List<MyOrder> myOrders = getActualMyOrders();
 
@@ -288,13 +274,11 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
                     getContent().remove(change);
                     order.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
                     getContent().add(order);
-//                    orderClickListener(order);
 
-                    Notification n = Notification.show("Uwaga! " + loggedUser.getName() + ". Zamówienie " + radioGroup.getValue().toString() + " zostało odwołane");
+                    Notification n = Notification.show("Uwaga! " + loggedUser.getName() + ". Zamówienie " + cancelOrder + " zostało odwołane");
                     n.setPosition(Notification.Position.MIDDLE);
                     n.addThemeVariants(NotificationVariant.LUMO_ERROR);
 
-                } else Notification.show("Nie wybrano żadnej potrawy ");
             } catch (ObjectOptimisticLockingFailureException exception) {
                 Notification n = Notification.show(
                         "Error updating the data. Somebody else has updated the record while you were making changes.");
