@@ -16,8 +16,15 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import jakarta.annotation.security.PermitAll;
-import pl.jkuznik.data.randomSentence.RandomSentence;
+import pl.jkuznik.data.information.CurrentInformation;
+import pl.jkuznik.data.information.Information;
+import pl.jkuznik.data.sentence.RandomSentence;
+import pl.jkuznik.data.sentence.Sentence;
+import pl.jkuznik.services.InformationService;
+import pl.jkuznik.services.SentencesService;
 import pl.jkuznik.views.MainLayout;
+
+import java.util.List;
 
 @PageTitle("Easy Access to Taste")
 @Route(value = "index", layout = MainLayout.class)
@@ -25,9 +32,11 @@ import pl.jkuznik.views.MainLayout;
 @PermitAll
 @Uses(Icon.class)
 public class EasyAccesstoTasteView extends Composite<VerticalLayout> {
-
-    public EasyAccesstoTasteView() {
-        RandomSentence randomSentence = new RandomSentence();
+    private final SentencesService sentencesService;
+    private final InformationService informationService;
+    public EasyAccesstoTasteView(SentencesService sentencesService, InformationService informationService) {
+        this.sentencesService = sentencesService;
+        this.informationService = informationService;
 
         HorizontalLayout layoutRow = new HorizontalLayout();
         Paragraph textLarge = new Paragraph();
@@ -42,7 +51,7 @@ public class EasyAccesstoTasteView extends Composite<VerticalLayout> {
         layoutRow.addClassName(Gap.MEDIUM);
         layoutRow.setWidth("100%");
         layoutRow.getStyle().set("flex-grow", "1");
-        textLarge.setText(randomSentence.getSentences());
+        textLarge.setText(getText());
         textLarge.setWidth("100%");
         textLarge.getStyle().set("font-size", "var(--lumo-font-size-xl)");
         link.setText("https://github.com/jkuznik/jkuznik");
@@ -52,8 +61,29 @@ public class EasyAccesstoTasteView extends Composite<VerticalLayout> {
         getContent().add(layoutRow);
         layoutRow.add(textLarge);
         getContent().add(layoutRow);
-        layoutRow.add("(Losowa sentencja albo sposób przekazu ważnych informacji firmowych)");
+//        layoutRow.add("");
         getContent().add(hr);
         getContent().add(link);
+    }
+
+    private String getText(){
+        List<Information> list = informationService.list();
+        Information information = list.stream()
+                .filter(Information::isActive)
+                .findFirst()
+                .orElse(null);
+        if(information!=null) return information.getText();
+
+        RandomSentence randomSentence = new RandomSentence();
+        List<Sentence> sentences = sentencesService.list();
+
+        for (Sentence s : sentences) {
+            randomSentence.setSentence(s.getText());
+        }
+
+        return randomSentence.getSentence();
+
+//        if (information.getText().isEmpty()) return randomSentence.getSentence();
+//        else return information.getText();
     }
 }

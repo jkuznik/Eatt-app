@@ -31,10 +31,6 @@ public class MyOrder extends AbstractEntity {
     public Long getId() {
         return id;
     }
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
     public String getRestaurantName() {
         return restaurantName;
     }

@@ -1,3 +1,13 @@
+DROP TABLE IF EXISTS information
+create table information (version int, id BIGINT AUTO_INCREMENT primary key, text varchar(32767), is_active boolean)
+DROP TABLE IF EXISTS sentence
+create table sentence (version int, id int primary key, text varchar(32767))
+insert into sentence values (1, 1, 'Śniadanie to najważniejszy posiłek dnia, więc warto poświęcić mu czas.')
+insert into sentence values (1, 2, 'Smacznego!')
+insert into sentence values (1, 3, 'Najlepszym sposobem na rozpoczęcie dnia jest pyszne śniadanie.')
+insert into sentence values (1, 4, 'Wielu ludzi uważa, że wspólne posiłki są podstawą dobrych relacji.')
+insert into sentence values (1, 5, 'Miłego dnia :)')
+insert into sentence values (1, 6, 'Żona programisty- Idź do sklepu i kup chleb, a jak będą jajka to weź 10. W sklepie. - Są jajka? - Tak. - To poproszę 10 chlebów.')
 DROP TABLE IF EXISTS restaurant
 create table restaurant (version int, id int primary key, name varchar(255), is_active boolean)
 insert into restaurant (version, id, name, is_active) values (1, 1, 'Pizzeria Lolo', true)
