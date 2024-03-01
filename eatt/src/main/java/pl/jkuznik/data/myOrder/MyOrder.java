@@ -92,8 +92,14 @@ public class MyOrder extends AbstractEntity {
     public boolean isActive() {
         return isActive;
     }
+    public boolean getIsActive() {
+        return isActive;
+    }
 
     public void setActive(boolean active) {
+        isActive = active;
+    }
+    public void setIsActive(boolean active) {
         isActive = active;
     }
 }

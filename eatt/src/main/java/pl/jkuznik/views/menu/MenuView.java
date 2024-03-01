@@ -3,6 +3,7 @@ package pl.jkuznik.views.menu;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.accordion.Accordion;
+import com.vaadin.flow.component.accordion.AccordionPanel;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.Uses;
@@ -48,21 +49,55 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
     private final Button order = new Button("Zamów");
     private final Button change = new Button("Zmień zamówienie");
     private final Button absent = new Button("Odwołaj zamówienie");
-    VerticalLayout descriptionLayout = new VerticalLayout();
-    VerticalLayout allergensLayout = new VerticalLayout();
-    VerticalLayout nutritionsLayout = new VerticalLayout();
-    Accordion accordion = new Accordion();
-    Span description;
-    Span allergens;
-    Span nutritions;
+    private VerticalLayout descriptionLayout = new VerticalLayout();
+    private VerticalLayout allergensLayout = new VerticalLayout();
+    private VerticalLayout nutritionsLayout = new VerticalLayout();
     public MenuView(AuthenticatedUser authenticatedUser, RestaurantService restaurantService, MealService mealService, MyOrderService myOrderService) {
         this.authenticatedUser = authenticatedUser;
         this.restaurantService = restaurantService;
         this.mealService = mealService;
         this.myOrderService = myOrderService;
+        Accordion accordion = new Accordion();
 
         if (getRestaurant() == null) restaurantName = "Nie wybrano restauracji. Zgłoś to w administracji";
         else restaurantName = getRestaurant().getName();
+
+        getContent().setWidth("100%");
+        getContent().getStyle().set("flex-grow", "1");
+        radioGroup.setLabel(restaurantName);
+        radioGroup.setWidth("min-content");
+        radioGroup.setItems(getMeals(getRestaurant()));
+        radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
+
+        List<MyOrder> actualMyOrders = getActualMyOrders();
+        User loggedUser = getLoggedUser();
+        Optional<MyOrder> any = actualMyOrders.stream()
+                .filter(myOrder -> myOrder.getUserName() == loggedUser.getName())
+                .filter(MyOrder::isActive)
+                .findAny();
+        getContent().add(radioGroup);
+        getContent().add(accordion);
+        if (any.isEmpty()) {
+            order.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+            getContent().add(order);
+        }
+        else {
+            getContent().add(change);
+            absent.addThemeVariants(ButtonVariant.LUMO_ERROR);
+            getContent().add(absent);
+        }
+        setAccoriondSampleData(accordion, radioGroup);
+
+        orderClickListener(order);
+        changeClickListener(change);
+        absentClickListener(absent);
+    radioGroup.addValueChangeListener(event -> setAccordionSampleDataAndRefresh(accordion, radioGroup, order, change, absent, descriptionLayout, allergensLayout, nutritionsLayout));
+    }
+    private void setAccoriondSampleData(Accordion accordion, RadioButtonGroup radioGroup){
+        Span description;
+        Span allergens;
+        Span nutritions;
+
         if (getRestaurant() == null) description = new Span("Wybierz restaurację");
         else description = new Span(getMeal(getRestaurant(), radioGroup).getDescription());
         descriptionLayout.setSpacing(true);
@@ -82,43 +117,35 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
         nutritionsLayout.add(nutritions);
         accordion.add("Wartości odżywcze", nutritionsLayout);
 
-
-        getContent().setWidth("100%");
-        getContent().getStyle().set("flex-grow", "1");
-        radioGroup.setLabel(restaurantName);
-        radioGroup.setWidth("min-content");
-        radioGroup.setItems(getMeals(getRestaurant()));
-        radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
-        orderClickListener(order);
-        changeClickListener(change);
-        absentClickListener(absent);
-
-        getContent().add(radioGroup);
-        getContent().add(accordion);
-        getContent().add(order);
-        getContent().add(change);
-        getContent().add(absent);
-        setAccordionSampleData(accordion, radioGroup, order, change, absent, descriptionLayout, allergensLayout, nutritionsLayout);
-
-    radioGroup.addValueChangeListener(event -> setAccordionSampleData(accordion, radioGroup, order, change, absent, descriptionLayout, allergensLayout, nutritionsLayout));
     }
 
-    private void setAccordionSampleData(Accordion accordion, RadioButtonGroup radioGroup, Button button1, Button button2, Button button3, VerticalLayout verticalLayout1, VerticalLayout verticalLayout2, VerticalLayout verticalLayout3) {
+    private void setAccordionSampleDataAndRefresh(Accordion accordion, RadioButtonGroup radioGroup, Button button1, Button button2, Button button3, VerticalLayout verticalLayout1, VerticalLayout verticalLayout2, VerticalLayout verticalLayout3) {
         accordion.remove(verticalLayout1);
         accordion.remove(verticalLayout2);
         accordion.remove(verticalLayout3);
         getContent().remove(accordion);
         getContent().remove(radioGroup);
-        getContent().remove(button1);
-        getContent().remove(button2);
-        getContent().remove(button3);
+
+
         List<MyOrder> actualMyOrders = getActualMyOrders();
         User loggedUser = getLoggedUser();
-
         Optional<MyOrder> any = actualMyOrders.stream()
                 .filter(myOrder -> myOrder.getUserName() == loggedUser.getName())
                 .filter(MyOrder::isActive)
                 .findAny();
+
+        if (any.isEmpty()) {
+            order.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+            getContent().add(button1);
+        }
+        else {
+            getContent().add(button2);
+            absent.addThemeVariants(ButtonVariant.LUMO_ERROR);
+            getContent().add(button3);
+        }
+        Span description;
+        Span allergens;
+        Span nutritions;
         if (getRestaurant() == null) description = new Span("Wybierz restaurację");
         else description = new Span(getMeal(getRestaurant(), radioGroup).getDescription());
         descriptionLayout = new VerticalLayout();
@@ -322,11 +349,4 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
         return loggedUser.get();
     }
 
-    public Accordion getAccordion() {
-        return accordion;
-    }
-
-    public void setAccordion(Accordion accordion) {
-        this.accordion = accordion;
-    }
 }
