@@ -26,6 +26,7 @@ DROP TABLE IF EXISTS my_order
 create table my_order (version int, id BIGINT AUTO_INCREMENT PRIMARY KEY, restaurant_name varchar(255), meal_name varchar(255), user_id bigint, comment varchar(32766), rating int, is_active boolean)
 DROP TABLE IF EXISTS sample_person
 create table sample_person (version int, id BIGINT AUTO_INCREMENT PRIMARY KEY, user_name varchar(255), user_email varchar(255), mo_restaurant_name varchar(255), mo_meal_name varchar(255), mo_comment varchar(32766), mo_rating int, me_description varchar(32766), me_allergens varchar(32766), me_nutritions varchar(32767), order_date date)
+insert into sample_person (mo_restaurant_name, mo_meal_name, me_description, me_allergens, me_nutritions, version, user_name, user_email, mo_comment, mo_rating, order_date) values ('Atmosfera', 'Hamburger', '100% (w)Ołowiu', 'Gluten, e234, e235, e236, e237,.., e15432', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 1, ' ', ' ', ' ', 6, '1000-01-01')
 
 
 

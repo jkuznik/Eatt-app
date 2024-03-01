@@ -2,6 +2,9 @@ package pl.jkuznik.views.edit;
 
 import jakarta.annotation.security.RolesAllowed;
 import pl.jkuznik.data.SamplePerson;
+import pl.jkuznik.data.meal.Meal;
+import pl.jkuznik.services.MealService;
+import pl.jkuznik.services.RestaurantService;
 import pl.jkuznik.services.SamplePersonService;
 import pl.jkuznik.views.MainLayout;
 
@@ -33,6 +36,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
+
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.PageRequest;
@@ -66,9 +71,13 @@ public class EditView extends Div implements BeforeEnterObserver {
     private SamplePerson samplePerson;
 
     private final SamplePersonService samplePersonService;
+    private final MealService mealService;
+    private final RestaurantService restaurantService;
 
-    public EditView(SamplePersonService samplePersonService) {
+    public EditView(SamplePersonService samplePersonService, MealService mealService, RestaurantService restaurantService) {
         this.samplePersonService = samplePersonService;
+        this.mealService = mealService;
+        this.restaurantService = restaurantService;
         addClassNames("edit-view");
 
         // UserInfo is used by Collaboration Engine and is used to share details
@@ -90,12 +99,14 @@ public class EditView extends Div implements BeforeEnterObserver {
 
         add(splitLayout);
 
+        Meal meal = new Meal();
+
         // Configure Grid
-        grid.addColumn("moRestaurantName").setAutoWidth(true);
-        grid.addColumn("moMealName").setAutoWidth(true);
-        grid.addColumn("meDescription").setAutoWidth(true);
-        grid.addColumn("meAllergens").setAutoWidth(true);
-        grid.addColumn("meNutritions").setAutoWidth(true);
+        grid.addColumn("moRestaurantName").setAutoWidth(true).setHeader("Restauracja");
+        grid.addColumn("moMealName").setAutoWidth(true).setHeader("Danie");
+        grid.addColumn("meDescription").setAutoWidth(true).setHeader("Opis");
+        grid.addColumn("meAllergens").setAutoWidth(true).setHeader("Alergeny");
+        grid.addColumn("meNutritions").setAutoWidth(true).setHeader("Wartości");
 
         grid.setItems(query -> samplePersonService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
@@ -125,15 +136,21 @@ public class EditView extends Div implements BeforeEnterObserver {
         });
 
         save.addClickListener(e -> {
+            LocalDate localDate = LocalDate.of(1000, 01, 01);
             try {
                 if (this.samplePerson == null) {
                     this.samplePerson = new SamplePerson();
                 }
                 binder.writeBean(this.samplePerson);
+                samplePerson.setUserName(" ");
+                samplePerson.setUserEmail("a@a.aa");
+                samplePerson.setMoComment(" ");
+                samplePerson.setMoRating(6);
+                samplePerson.setOrderDate(localDate);
                 samplePersonService.update(this.samplePerson);
                 clearForm();
                 refreshGrid();
-                Notification.show("Data updated");
+                Notification.show("Zmieniono").setPosition(Position.BOTTOM_END);
                 UI.getCurrent().navigate(EditView.class);
             } catch (ObjectOptimisticLockingFailureException exception) {
                 Notification n = Notification.show(

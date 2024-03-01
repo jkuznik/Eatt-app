@@ -1,6 +1,7 @@
 package pl.jkuznik.views.menu;
 
 import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -25,6 +26,7 @@ import pl.jkuznik.services.MealService;
 import pl.jkuznik.services.MyOrderService;
 import pl.jkuznik.services.RestaurantService;
 import pl.jkuznik.views.MainLayout;
+import pl.jkuznik.views.manage.ManageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,6 +71,8 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
         radioGroup.setWidth("min-content");
         radioGroup.setItems(getMeals(getRestaurant()));
         radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
+
+
         getContent().add(radioGroup);
 
         Accordion accordion = new Accordion();
@@ -90,6 +94,9 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
 
 
     radioGroup.addValueChangeListener(event -> {
+        getContent().remove(accordion);
+        setAccordionSampleData(accordion, radioGroup);
+        UI.getCurrent().navigate(MenuView.class);
         // dopisać dynamiczne usuwanie/odświeżanie 'accordion'
     });
     }
