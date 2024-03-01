@@ -1,4 +1,4 @@
-package pl.jkuznik.services;
+package pl.jkuznik.data.user;
 
 import java.util.Optional;
 import org.springframework.data.domain.Page;

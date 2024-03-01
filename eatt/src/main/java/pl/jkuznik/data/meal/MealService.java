@@ -1,4 +1,4 @@
-package pl.jkuznik.services;
+package pl.jkuznik.data.meal;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,43 +6,43 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import pl.jkuznik.data.sentence.Sentence;
-import pl.jkuznik.data.sentence.SentenceRepository;
+import pl.jkuznik.data.meal.Meal;
+import pl.jkuznik.data.meal.MealRepository;
 
 @Service
-public class SentencesService {
-    private final SentenceRepository repository;
+public class MealService {
 
-    public SentencesService(SentenceRepository repository) {
+    private final MealRepository repository;
+
+    public MealService(MealRepository repository) {
         this.repository = repository;
     }
 
-    public Optional<Sentence> get(Long id) {
+    public Optional<Meal> get(Long id) {
         return repository.findById(id);
     }
 
-    public Sentence update(Sentence entity) {
+    public Meal update(Meal entity) {
         return repository.save(entity);
-    }
-    public void updateAll(List<Sentence> sentences) {
-        repository.saveAll(sentences);
     }
 
     public void delete(Long id) {
         repository.deleteById(id);
     }
-    public List<Sentence> list() {
+    public List<Meal> list() {
         return repository.findAll();
     }
-    public Page<Sentence> list(Pageable pageable) {
+
+    public Page<Meal> list(Pageable pageable) {
         return repository.findAll(pageable);
     }
 
-    public Page<Sentence> list(Pageable pageable, Specification<Sentence> filter) {
+    public Page<Meal> list(Pageable pageable, Specification<Meal> filter) {
         return repository.findAll(filter, pageable);
     }
 
     public int count() {
         return (int) repository.count();
     }
+
 }

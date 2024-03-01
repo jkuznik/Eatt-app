@@ -1,15 +1,15 @@
 package pl.jkuznik.views.myorder;
 
-import pl.jkuznik.data.SamplePerson;
+import pl.jkuznik.data.samplePerson.SamplePerson;
 import pl.jkuznik.data.meal.Meal;
 import pl.jkuznik.data.myOrder.MyOrder;
 import pl.jkuznik.data.restaurant.Restaurant;
 import pl.jkuznik.data.user.User;
 import pl.jkuznik.security.AuthenticatedUser;
-import pl.jkuznik.services.MealService;
-import pl.jkuznik.services.MyOrderService;
-import pl.jkuznik.services.RestaurantService;
-import pl.jkuznik.services.SamplePersonService;
+import pl.jkuznik.data.meal.MealService;
+import pl.jkuznik.data.myOrder.MyOrderService;
+import pl.jkuznik.data.restaurant.RestaurantService;
+import pl.jkuznik.data.samplePerson.SamplePersonService;
 import pl.jkuznik.views.MainLayout;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;

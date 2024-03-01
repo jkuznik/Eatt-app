@@ -2,7 +2,6 @@ package pl.jkuznik.views.manage;
 
 import com.vaadin.collaborationengine.CollaborationBinder;
 import com.vaadin.collaborationengine.UserInfo;
-import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -26,17 +25,15 @@ import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import pl.jkuznik.data.SamplePerson;
 import pl.jkuznik.data.information.Information;
 import pl.jkuznik.data.myOrder.MyOrder;
 import pl.jkuznik.data.restaurant.Restaurant;
-import pl.jkuznik.services.InformationService;
-import pl.jkuznik.services.MyOrderService;
-import pl.jkuznik.services.RestaurantService;
+import pl.jkuznik.data.information.InformationService;
+import pl.jkuznik.data.myOrder.MyOrderService;
+import pl.jkuznik.data.restaurant.RestaurantService;
 import pl.jkuznik.views.MainLayout;
 import pl.jkuznik.views.edit.EditView;
 
-import java.util.EventListener;
 import java.util.List;
 import java.util.UUID;
 
@@ -61,8 +58,12 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
     private Button edit = new Button("Edytuj");
     private TextField infoTextField = new TextField();
     private MyOrder myOrder;
+    private SplitLayout splitLayout = new SplitLayout();
     private Div editorLayoutDiv = new Div();
+    private FormLayout formLayout = new FormLayout();
     private Div editorDiv = new Div();
+    private Div wrapper = new Div();
+    private HorizontalLayout buttonLayout = new HorizontalLayout();
 
     record SampleItem(String value, String label, Boolean disabled) {
     }
@@ -100,9 +101,15 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
                 UI.getCurrent().navigate(ManageView.class);
-                editorLayoutDiv.remove(editorDiv);
-                createEditorLayout(splitLayout, event.getValue().getUserName(), event.getValue().getMealName());
-                editorLayoutDiv.add(editorDiv);
+                editorDiv.remove(formLayout);
+                FormLayout formLayout = new FormLayout();
+                userName = new TextField("Pracownik");
+                mealName = new TextField("Danie");
+                userName.setValue(event.getValue().getUserName());
+                mealName.setValue(event.getValue().getMealName());
+                formLayout.add(userName, mealName);
+                formLayout.add(userName, mealName);
+                editorDiv.add(formLayout);
             } else {
                 UI.getCurrent().navigate(ManageView.class);
             }
@@ -147,7 +154,6 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
         editorDiv.setClassName("editor");
         editorLayoutDiv.add(editorDiv);
 
-        FormLayout formLayout = new FormLayout();
         userName = new TextField("Pracownik");
         mealName = new TextField("Danie");
 
@@ -156,7 +162,6 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
         editorDiv.add(formLayout);
         createButtonLayout(editorLayoutDiv);
 
-        Div wrapper = new Div();
         wrapper.setClassName("grid-wrapper");
         splitLayout.addToPrimary(wrapper, editorLayoutDiv);
         wrapper.add(grid);
@@ -204,7 +209,6 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
 
     }
     private void createButtonLayout(Div editorLayoutDiv) {  // NAPISAĆ TEST
-        HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setClassName("button-layout");
         order.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         edit.addThemeVariants(ButtonVariant.LUMO_ERROR);

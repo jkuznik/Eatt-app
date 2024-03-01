@@ -1,7 +1,9 @@
-package pl.jkuznik.data;
+package pl.jkuznik.data.samplePerson;
 
 import jakarta.persistence.Entity;
 import jakarta.validation.constraints.Email;
+import pl.jkuznik.data.AbstractEntity;
+
 import java.time.LocalDate;
 
 @Entity

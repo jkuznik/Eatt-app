@@ -1,11 +1,11 @@
 package pl.jkuznik.views.edit;
 
 import jakarta.annotation.security.RolesAllowed;
-import pl.jkuznik.data.SamplePerson;
+import pl.jkuznik.data.samplePerson.SamplePerson;
 import pl.jkuznik.data.meal.Meal;
-import pl.jkuznik.services.MealService;
-import pl.jkuznik.services.RestaurantService;
-import pl.jkuznik.services.SamplePersonService;
+import pl.jkuznik.data.meal.MealService;
+import pl.jkuznik.data.restaurant.RestaurantService;
+import pl.jkuznik.data.samplePerson.SamplePersonService;
 import pl.jkuznik.views.MainLayout;
 
 import com.vaadin.collaborationengine.CollaborationAvatarGroup;
@@ -14,8 +14,6 @@ import com.vaadin.collaborationengine.UserInfo;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -29,12 +27,10 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.ValidationException;
-import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 
 import java.time.LocalDate;

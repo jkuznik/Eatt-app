@@ -1,4 +1,4 @@
-package pl.jkuznik.services;
+package pl.jkuznik.data.restaurant;
 
 import java.util.List;
 import java.util.Optional;

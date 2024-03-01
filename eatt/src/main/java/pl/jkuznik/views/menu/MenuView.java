@@ -1,9 +1,7 @@
 package pl.jkuznik.views.menu;
 
 import com.vaadin.flow.component.Composite;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.accordion.Accordion;
-import com.vaadin.flow.component.accordion.AccordionPanel;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.Uses;
@@ -23,17 +21,14 @@ import pl.jkuznik.data.myOrder.MyOrder;
 import pl.jkuznik.data.restaurant.Restaurant;
 import pl.jkuznik.data.user.User;
 import pl.jkuznik.security.AuthenticatedUser;
-import pl.jkuznik.services.MealService;
-import pl.jkuznik.services.MyOrderService;
-import pl.jkuznik.services.RestaurantService;
+import pl.jkuznik.data.meal.MealService;
+import pl.jkuznik.data.myOrder.MyOrderService;
+import pl.jkuznik.data.restaurant.RestaurantService;
 import pl.jkuznik.views.MainLayout;
-import pl.jkuznik.views.manage.ManageView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 @PageTitle("Menu")
 @Route(value = "menu", layout = MainLayout.class)

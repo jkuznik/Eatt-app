@@ -1,4 +1,4 @@
-package pl.jkuznik.services;
+package pl.jkuznik.data.information;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

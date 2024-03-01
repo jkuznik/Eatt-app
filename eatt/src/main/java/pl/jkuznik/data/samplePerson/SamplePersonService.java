@@ -1,4 +1,4 @@
-package pl.jkuznik.services;
+package pl.jkuznik.data.samplePerson;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,8 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import pl.jkuznik.data.SamplePerson;
-import pl.jkuznik.data.SamplePersonRepository;
+import pl.jkuznik.data.samplePerson.SamplePerson;
+import pl.jkuznik.data.samplePerson.SamplePersonRepository;
 
 @Service
 public class SamplePersonService {
