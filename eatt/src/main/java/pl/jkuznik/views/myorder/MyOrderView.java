@@ -155,7 +155,7 @@ public class MyOrderView extends Composite<VerticalLayout>  {
     private MyOrder getMyOrder(User user) {
         List<MyOrder> myOrders = myOrderService.list();
         Optional<MyOrder> activeOrder = myOrders.stream()
-                .filter(order -> order.getUserId().equals(user.getId()) && order.isActive())
+                .filter(order -> order.getUserName().equals(user.getName()) && order.isActive())
                 .findFirst();
         return activeOrder.orElse(null);
     }

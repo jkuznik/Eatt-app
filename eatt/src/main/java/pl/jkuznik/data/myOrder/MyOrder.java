@@ -20,9 +20,11 @@ public class MyOrder extends AbstractEntity {
     private Long id;
     private String restaurantName;
     private String mealName;
-    private Long userId;
+    private String userName;
+    private String notes;
     private String comment;
     private int rating;
+    private String email;
     private boolean isActive;
 
     public MyOrder() {
@@ -47,21 +49,21 @@ public class MyOrder extends AbstractEntity {
         this.mealName = mealName;
     }
 
-    public Long getUserId() {
-        return userId;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUserId(Long applicationUserId) {
-        this.userId = applicationUserId;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    //    public String getApplicationUserName() {
-//        return applicationUserName;
-//    }
-//
-//    public void setApplicationUserName(String applicationUserName) {
-//        this.applicationUserName = applicationUserName;
-//    }
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
 
     public String getComment() {
         return comment;
@@ -77,6 +79,14 @@ public class MyOrder extends AbstractEntity {
 
     public void setRating(int rating) {
         this.rating = rating;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public boolean isActive() {

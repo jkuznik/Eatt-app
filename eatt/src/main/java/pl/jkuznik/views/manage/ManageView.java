@@ -23,17 +23,15 @@ import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import pl.jkuznik.data.SamplePerson;
+import pl.jkuznik.data.myOrder.MyOrder;
 import pl.jkuznik.data.information.Information;
 import pl.jkuznik.data.restaurant.Restaurant;
 import pl.jkuznik.services.InformationService;
 import pl.jkuznik.services.RestaurantService;
-import pl.jkuznik.services.SamplePersonService;
+import pl.jkuznik.services.MyOrderService;
 import pl.jkuznik.views.MainLayout;
-import pl.jkuznik.views.edit.EditView;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @PageTitle("Manage")
 @Route(value = "manage", layout = MainLayout.class)
@@ -44,46 +42,49 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
     private String restaurantName;
     private final RestaurantService restaurantService;
     private final InformationService informationService;
-    private final SamplePersonService samplePersonService;
+    private final MyOrderService myOrdeService;
     Select select = new Select();
     Select select2 = new Select();
     Button choseButton = new Button("Wybierz");
     Button setButton = new Button("Ustaw");
-    private final Grid<SamplePerson> grid = new Grid<>(SamplePerson.class, false);
+    private final Grid<MyOrder> grid = new Grid<>(MyOrder.class, false);
     private final String SAMPLEPERSON_EDIT_ROUTE_TEMPLATE = "collaborative-master-detail/%s/edit";
     private TextField userName;
-    private TextField moMealName;
+    private TextField mealName;
+    private TextField email;
     private Button order = new Button("Wyślij zamówienie");
     private Button change = new Button("Edytuj");
-    private TextField textField = new TextField();
+    private TextField infoTextField = new TextField();
 
     record SampleItem(String value, String label, Boolean disabled) {
     }
 
-    public ManageView(RestaurantService restaurantService, InformationService informationService, SamplePersonService samplePersonService) {
+    public ManageView(RestaurantService restaurantService, InformationService informationService, MyOrderService myOrdeService) {
         this.restaurantService = restaurantService;
         this.informationService = informationService;
-        this.samplePersonService = samplePersonService;
+        this.myOrdeService = myOrdeService;
 
         SplitLayout splitLayout = new SplitLayout();
 
-        textField.setLabel("Ustaw informację dnia");
-        textField.setHelperText("Brak informacji - ustaw to pole puste");
-        textField.setValue("");
-        textField.setClearButtonVisible(true);
-        textField.setPrefixComponent(VaadinIcon.MAP_MARKER.create());
+        infoTextField.setLabel("Ustaw informację dnia");
+        infoTextField.setHelperText("Brak informacji - ustaw to pole puste");
+        infoTextField.setValue("");
+        infoTextField.setClearButtonVisible(true);
+        infoTextField.setPrefixComponent(VaadinIcon.MAP_MARKER.create());
 
-        GridContextMenu<SamplePerson> menu = grid.addContextMenu();
-        menu.addItem("View", event -> {
-        });
-        menu.addItem("Edit", event -> {
-        });
-        menu.addItem("Delete", event -> {
-        });
-        grid.addColumn("userName").setAutoWidth(true);
-        grid.addColumn("moMealName").setAutoWidth(true);
-        grid.addColumn("userEmail").setAutoWidth(true);
-        grid.setItems(query -> samplePersonService.list(
+//        GridContextMenu<MyOrder> menu = grid.addContextMenu();
+//        menu.addItem("View", event -> {
+//        });
+//        menu.addItem("Edit", event -> {
+//        });
+//        menu.addItem("Delete", event -> {
+//        });
+        grid.addColumn("userName").setAutoWidth(true).setHeader("Pracownik");
+        grid.addColumn("mealName").setAutoWidth(true).setHeader("Danie");
+        grid.addColumn("email").setAutoWidth(true).setHeader("Kontakt");
+
+
+        grid.setItems(query -> myOrdeService.list(
                         PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
@@ -110,9 +111,9 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
 
         formLayout2Col.add(select);
         formLayout2Col.add(choseButton);
-        formLayout2Col.add(textField);
+        formLayout2Col.add(infoTextField);
         formLayout2Col.add(setButton);
-        formLayout2Col.add(menu);
+//        formLayout2Col.add(menu);
 
         createGridAndEditorLayout(splitLayout);
         splitLayout.addToSecondary(formLayout2Col);
@@ -131,10 +132,11 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
-        userName = new TextField("First Name");
-        moMealName = new TextField("Last Name");
+        userName = new TextField("Pracownik");
+        mealName = new TextField("Danie");
+        email = new TextField("Kontakt");
 
-        formLayout.add(userName, moMealName);
+        formLayout.add(userName, mealName, email);
 
         editorDiv.add(formLayout);
         createButtonLayout(editorLayoutDiv);
@@ -144,33 +146,7 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
         splitLayout.addToPrimary(wrapper, editorLayoutDiv);
         wrapper.add(grid);
     }
-    private void createGridLayout(SplitLayout splitLayout) {
-
-        Div wrapper = new Div();
-        wrapper.setClassName("grid-wrapper");
-        splitLayout.addToPrimary(wrapper);
-        wrapper.add(grid);
-    }
-    private void createEditorLayout(SplitLayout splitLayout) {
-        Div editorLayoutDiv = new Div();
-        editorLayoutDiv.setClassName("editor-layout");
-
-        Div editorDiv = new Div();
-        editorDiv.setClassName("editor");
-        editorLayoutDiv.add(editorDiv);
-
-        FormLayout formLayout = new FormLayout();
-        userName = new TextField("First Name");
-        moMealName = new TextField("Last Name");
-
-        formLayout.add(userName, moMealName);
-
-        editorDiv.add(formLayout);
-        createButtonLayout(editorLayoutDiv);
-
-        splitLayout.addToSecondary(editorLayoutDiv);
-    }
-    private void createButtonLayout(Div editorLayoutDiv) {
+    private void createButtonLayout(Div editorLayoutDiv) {  // NAPISAĆ TEST
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setClassName("button-layout");
         order.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -216,7 +192,7 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
         button.addClickListener(e -> {
             try {
                 Information information = new Information();
-                information.setText(textField.getValue());
+                information.setText(infoTextField.getValue());
 
                 if (!information.getText().isBlank()) {
                     information.setActive(true);
@@ -232,7 +208,7 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
                         informations.add(information);
                         informationService.updateAll(informations);
                     }
-                    Notification n = Notification.show("Ustawiono wyświetlaną informację na " + textField.getValue());
+                    Notification n = Notification.show("Ustawiono wyświetlaną informację na " + infoTextField.getValue());
                     n.setPosition(Notification.Position.BOTTOM_END);
                 }
                 else {
@@ -254,6 +230,21 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
             } catch (IllegalStateException illegalStateException) {
                 Notification.show("Failed to update the data. Check again that all values are valid");
             }
+        });
+    }
+    private void clickOrderListener(Button button) {
+        button.addClickListener( e -> {
+            List<MyOrder> orders = myOrdeService.list().stream()
+                    .filter(MyOrder::isActive)
+                    .toList();
+
+            List<MyOrder> myOrders = myOrdeService.list();
+
+            for (MyOrder myOrder : myOrders){
+                if (myOrder.isActive()) myOrder.setActive(false);
+            }
+
+            myOrdeService.updateAll(myOrders);
         });
     }
 }

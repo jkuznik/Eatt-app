@@ -110,7 +110,9 @@ public class EditView extends Div implements BeforeEnterObserver {
 
         grid.setItems(query -> samplePersonService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
-                .stream());
+                .stream()
+                .filter( sp -> !sp.getMoRestaurantName().isBlank())
+        );
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
         // when a row is selected or deselected, populate form

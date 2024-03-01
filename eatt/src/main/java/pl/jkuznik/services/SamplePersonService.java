@@ -1,5 +1,6 @@
 package pl.jkuznik.services;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,9 @@ public class SamplePersonService {
 
     public void delete(Long id) {
         repository.deleteById(id);
+    }
+    public List<SamplePerson> list(){
+        return  repository.findAll();
     }
 
     public Page<SamplePerson> list(Pageable pageable) {
