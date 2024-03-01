@@ -51,14 +51,11 @@ public class EditView extends Div implements BeforeEnterObserver {
 
     CollaborationAvatarGroup avatarGroup;
 
-    private TextField firstName;
-    private TextField lastName;
-    private TextField email;
-    private TextField phone;
-    private DatePicker dateOfBirth;
-    private TextField occupation;
-    private TextField role;
-    private Checkbox important;
+    private TextField moRestaurantName;
+    private TextField moMealName;
+    private TextField meDescription;
+    private TextField meAllergens;
+    private TextField meNutritions;
 
     private final Button cancel = new Button("Anuluj");
     private final Button save = new Button("Zapisz");
@@ -94,21 +91,11 @@ public class EditView extends Div implements BeforeEnterObserver {
         add(splitLayout);
 
         // Configure Grid
-        grid.addColumn("firstName").setAutoWidth(true);
-        grid.addColumn("lastName").setAutoWidth(true);
-        grid.addColumn("email").setAutoWidth(true);
-        grid.addColumn("phone").setAutoWidth(true);
-        grid.addColumn("dateOfBirth").setAutoWidth(true);
-        grid.addColumn("occupation").setAutoWidth(true);
-        grid.addColumn("role").setAutoWidth(true);
-        LitRenderer<SamplePerson> importantRenderer = LitRenderer.<SamplePerson>of(
-                "<vaadin-icon icon='vaadin:${item.icon}' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: ${item.color};'></vaadin-icon>")
-                .withProperty("icon", important -> important.isImportant() ? "check" : "minus").withProperty("color",
-                        important -> important.isImportant()
-                                ? "var(--lumo-primary-text-color)"
-                                : "var(--lumo-disabled-text-color)");
-
-        grid.addColumn(importantRenderer).setHeader("Important").setAutoWidth(true);
+        grid.addColumn("moRestaurantName").setAutoWidth(true);
+        grid.addColumn("moMealName").setAutoWidth(true);
+        grid.addColumn("meDescription").setAutoWidth(true);
+        grid.addColumn("meAllergens").setAutoWidth(true);
+        grid.addColumn("meNutritions").setAutoWidth(true);
 
         grid.setItems(query -> samplePersonService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
@@ -187,15 +174,12 @@ public class EditView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
-        firstName = new TextField("First Name");
-        lastName = new TextField("Last Name");
-        email = new TextField("Email");
-        phone = new TextField("Phone");
-        dateOfBirth = new DatePicker("Date Of Birth");
-        occupation = new TextField("Occupation");
-        role = new TextField("Role");
-        important = new Checkbox("Important");
-        formLayout.add(firstName, lastName, email, phone, dateOfBirth, occupation, role, important);
+        moRestaurantName = new TextField("Restauracja");
+        moMealName = new TextField("Danie");
+        meDescription = new TextField("Opis");
+        meAllergens = new TextField("Alergeny");
+        meNutritions = new TextField("Wartości");
+        formLayout.add(moRestaurantName, moMealName, meDescription, meAllergens, meNutritions);
 
         editorDiv.add(avatarGroup, formLayout);
         createButtonLayout(editorLayoutDiv);

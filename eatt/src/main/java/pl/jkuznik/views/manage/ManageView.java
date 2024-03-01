@@ -51,8 +51,8 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
     Button setButton = new Button("Ustaw");
     private final Grid<SamplePerson> grid = new Grid<>(SamplePerson.class, false);
     private final String SAMPLEPERSON_EDIT_ROUTE_TEMPLATE = "collaborative-master-detail/%s/edit";
-    private TextField firstName;
-    private TextField lastName;
+    private TextField userName;
+    private TextField moMealName;
     private Button order = new Button("Wyślij zamówienie");
     private Button change = new Button("Edytuj");
     private TextField textField = new TextField();
@@ -80,8 +80,9 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
         });
         menu.addItem("Delete", event -> {
         });
-        grid.addColumn("firstName").setAutoWidth(true);
-        grid.addColumn("lastName").setAutoWidth(true);
+        grid.addColumn("userName").setAutoWidth(true);
+        grid.addColumn("moMealName").setAutoWidth(true);
+        grid.addColumn("userEmail").setAutoWidth(true);
         grid.setItems(query -> samplePersonService.list(
                         PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
@@ -129,10 +130,10 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
-        firstName = new TextField("First Name");
-        lastName = new TextField("Last Name");
+        userName = new TextField("First Name");
+        moMealName = new TextField("Last Name");
 
-        formLayout.add(firstName, lastName);
+        formLayout.add(userName, moMealName);
 
         editorDiv.add(formLayout);
         createButtonLayout(editorLayoutDiv);
@@ -158,10 +159,10 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
-        firstName = new TextField("First Name");
-        lastName = new TextField("Last Name");
+        userName = new TextField("First Name");
+        moMealName = new TextField("Last Name");
 
-        formLayout.add(firstName, lastName);
+        formLayout.add(userName, moMealName);
 
         editorDiv.add(formLayout);
         createButtonLayout(editorLayoutDiv);

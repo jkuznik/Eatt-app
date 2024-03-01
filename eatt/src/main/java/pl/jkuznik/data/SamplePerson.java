@@ -7,63 +7,95 @@ import java.time.LocalDate;
 @Entity
 public class SamplePerson extends AbstractEntity {
 
-    private String firstName;
-    private String lastName;
+    private String userName;
     @Email
-    private String email;
-    private String phone;
-    private LocalDate dateOfBirth;
-    private String occupation;
-    private String role;
-    private boolean important;
+    private String userEmail;
+    private String moRestaurantName;
+    private String moMealName;
+    private String moComment;
+    private int moRating;
+    private String meDescription;
+    private String meAllergens;
+    private String meNutritions;
+    private LocalDate orderDate;
 
-    public String getFirstName() {
-        return firstName;
-    }
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-    public String getLastName() {
-        return lastName;
-    }
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    public String getPhone() {
-        return phone;
-    }
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-    public LocalDate getDateOfBirth() {
-        return dateOfBirth;
-    }
-    public void setDateOfBirth(LocalDate dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
-    public String getOccupation() {
-        return occupation;
-    }
-    public void setOccupation(String occupation) {
-        this.occupation = occupation;
-    }
-    public String getRole() {
-        return role;
-    }
-    public void setRole(String role) {
-        this.role = role;
-    }
-    public boolean isImportant() {
-        return important;
-    }
-    public void setImportant(boolean important) {
-        this.important = important;
+    public String getUserName() {
+        return userName;
     }
 
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+    }
+
+    public String getMoRestaurantName() {
+        return moRestaurantName;
+    }
+
+    public void setMoRestaurantName(String moRestaurantName) {
+        this.moRestaurantName = moRestaurantName;
+    }
+
+    public String getMoMealName() {
+        return moMealName;
+    }
+
+    public void setMoMealName(String moMealName) {
+        this.moMealName = moMealName;
+    }
+
+    public String getMoComment() {
+        return moComment;
+    }
+
+    public void setMoComment(String moComment) {
+        this.moComment = moComment;
+    }
+
+    public int getMoRating() {
+        return moRating;
+    }
+
+    public void setMoRating(int moRating) {
+        this.moRating = moRating;
+    }
+
+    public String getMeDescription() {
+        return meDescription;
+    }
+
+    public void setMeDescription(String meDescription) {
+        this.meDescription = meDescription;
+    }
+
+    public String getMeAllergens() {
+        return meAllergens;
+    }
+
+    public void setMeAllergens(String meAllergens) {
+        this.meAllergens = meAllergens;
+    }
+
+    public String getMeNutritions() {
+        return meNutritions;
+    }
+
+    public void setMeNutritions(String meNutritions) {
+        this.meNutritions = meNutritions;
+    }
+
+    public LocalDate getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(LocalDate orderDate) {
+        this.orderDate = orderDate;
+    }
 }
