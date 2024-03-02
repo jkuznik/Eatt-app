@@ -39,14 +39,15 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
     private final RestaurantService restaurantService;
     private final MealService mealService;
     private final MyOrderService myOrderService;
-    private String restaurantName;
-    private RadioButtonGroup radioGroup = new RadioButtonGroup();
     private final Button order = new Button("Zamów");
     private final Button change = new Button("Zmień zamówienie");
     private final Button absent = new Button("Odwołaj zamówienie");
-    private VerticalLayout descriptionLayout = new VerticalLayout();
+
+    private RadioButtonGroup radioGroup = new RadioButtonGroup();
+        private VerticalLayout descriptionLayout = new VerticalLayout();
     private VerticalLayout allergensLayout = new VerticalLayout();
     private VerticalLayout nutritionsLayout = new VerticalLayout();
+    private String restaurantName;
     public MenuView(AuthenticatedUser authenticatedUser, RestaurantService restaurantService, MealService mealService, MyOrderService myOrderService) {
         this.authenticatedUser = authenticatedUser;
         this.restaurantService = restaurantService;
@@ -64,7 +65,7 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
         radioGroup.setItems(getMeals(getRestaurant()));
         radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
 
-        List<MyOrder> actualMyOrders = getActualMyOrders();
+        List<MyOrder> actualMyOrders = myOrderService.list();
         User loggedUser = getLoggedUser();
         Optional<MyOrder> any = actualMyOrders.stream()
                 .filter(myOrder -> myOrder.getUserName() == loggedUser.getName())
@@ -122,7 +123,7 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
         getContent().remove(radioGroup);
 
 
-        List<MyOrder> actualMyOrders = getActualMyOrders();
+        List<MyOrder> actualMyOrders = myOrderService.list();
         User loggedUser = getLoggedUser();
         Optional<MyOrder> any = actualMyOrders.stream()
                 .filter(myOrder -> myOrder.getUserName() == loggedUser.getName())
@@ -216,7 +217,7 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
         button.addClickListener(e -> {
             try {
                 if (radioGroup.getValue() != null) {
-                    List<MyOrder> actualMyOrders = getActualMyOrders();
+                    List<MyOrder> actualMyOrders = myOrderService.list();
                     User loggedUser = getLoggedUser();
                     actualMyOrders.forEach( myOrder -> {
                         if ((myOrder.getUserName() == loggedUser.getName()) && myOrder.isActive() ) myOrder.setActive(false);
@@ -257,10 +258,10 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
         button.addClickListener(e -> {
             try {
                 if (radioGroup.getValue() != null) {
-                    List<MyOrder> actualMyOrders = getActualMyOrders();
+                    List<MyOrder> myOrders = myOrderService.list();
                     User loggedUser = getLoggedUser();
 
-                    long index = actualMyOrders.stream()
+                    long index = myOrders.stream()
                             .filter(myOrder -> myOrder.getUserName() == loggedUser.getName())
                             .filter(MyOrder::isActive)
                             .mapToLong(MyOrder::getId)
@@ -268,7 +269,7 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
                             .getAsLong();
 
                     myOrderService.delete(index);
-                    List<MyOrder> myOrders3 = getActualMyOrders();
+                    List<MyOrder> myOrders1 = myOrderService.list();
 
                     MyOrder newOrder = new MyOrder();
                     newOrder.setRestaurantName(radioGroup.getLabel());
@@ -278,10 +279,10 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
                     newOrder.setRating(0);
                     newOrder.setActive(true);
 
-                    myOrders3.add(newOrder);
+                    myOrders1.add(newOrder);
 
                     myOrderService.update(newOrder);
-                    myOrderService.updateAll(myOrders3);
+                    myOrderService.updateAll(myOrders1);
 
                     Notification n = Notification.show("Witaj " + loggedUser.getName() + ". Zamówiono  " + radioGroup.getValue().toString() + ". Życzymy smacznego!");
                     n.setPosition(Notification.Position.MIDDLE);
@@ -301,7 +302,7 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
     private void absentClickListener(Button button) {
         button.addClickListener(e -> {
             try {
-                    List<MyOrder> actualMyOrders = getActualMyOrders();
+                    List<MyOrder> actualMyOrders = myOrderService.list();
                     User loggedUser = getLoggedUser();
                     String cancelOrder;
 
@@ -313,7 +314,7 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
 
                     cancelOrder = myOrderService.get(index).orElse(null).getMealName();
                     myOrderService.delete(index);
-                    List<MyOrder> myOrders = getActualMyOrders();
+                    List<MyOrder> myOrders = myOrderService.list();
 
                     myOrderService.updateAll(myOrders);
 
@@ -335,9 +336,6 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
                 Notification.show("Failed to update the data. Check again that all values are valid");
             }
         });
-    }
-    private List<MyOrder> getActualMyOrders(){
-        return myOrderService.list();
     }
     private User getLoggedUser(){
         Optional<User> loggedUser = authenticatedUser.get();

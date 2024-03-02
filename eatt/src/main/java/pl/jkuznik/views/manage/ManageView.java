@@ -43,21 +43,20 @@ import java.util.UUID;
 @RolesAllowed("ADMIN")
 @Uses(Icon.class)
 public class ManageView extends Div/* Composite<VerticalLayout>*/ {
-    private String restaurantName;
     private final RestaurantService restaurantService;
     private final InformationService informationService;
     private final MyOrderService myOrderService;
-    Select select = new Select();
-    Select select2 = new Select();
-    Button choseButton = new Button("Wybierz");
-    Button setButton = new Button("Ustaw");
     private final Grid<MyOrder> grid = new Grid<>(MyOrder.class, false);
     private final CollaborationBinder<MyOrder> binder;
-    private TextField userName =  new TextField("Pracownik");
-    private TextField mealName = new TextField("Danie");
-    private Button order = new Button("Wyślij zamówienie");
-    private Button edit = new Button("Edytuj");
+    private final Button choseButton = new Button("Wybierz");
+    private final Button setButton = new Button("Ustaw");
+    private final Button order = new Button("Wyślij zamówienie");
+    private final Button edit = new Button("Edytuj");
+    private final TextField userName =  new TextField("Pracownik");
+    private final TextField mealName = new TextField("Danie");
     private TextField infoTextField = new TextField();
+    private Select select = new Select();
+    private String restaurantName;
     private MyOrder myOrder;
     private SplitLayout splitLayout = new SplitLayout();
     private Div editorLayoutDiv = new Div();
@@ -73,22 +72,13 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
         this.restaurantService = restaurantService;
         this.informationService = informationService;
         this.myOrderService = myOrdeService;
+        UserInfo userInfo = new UserInfo(UUID.randomUUID().toString(), "Steve Lange");
+        binder = new CollaborationBinder<>(MyOrder.class, userInfo);
 
-        SplitLayout splitLayout = new SplitLayout();
+        // Bind fields. This is where you'd define e.g. validation rules
 
-        infoTextField.setLabel("Ustaw informację dnia");
-        infoTextField.setHelperText("Brak informacji - ustaw to pole puste");
-        infoTextField.setValue("");
-        infoTextField.setClearButtonVisible(true);
-        infoTextField.setPrefixComponent(VaadinIcon.MAP_MARKER.create());
+        binder.bindInstanceFields(this);
 
-//        GridContextMenu<MyOrder> menu = grid.addContextMenu();
-//        menu.addItem("View", event -> {
-//        });
-//        menu.addItem("Edit", event -> {
-//        });
-//        menu.addItem("Delete", event -> {
-//        });
         grid.addColumn("userName").setAutoWidth(true).setHeader("Pracownik");
         grid.addColumn("mealName").setAutoWidth(true).setHeader("Danie");
         grid.addColumn("email").setAutoWidth(true).setHeader("Kontakt");
@@ -103,25 +93,10 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
             if (event.getValue() != null) {
                 UI.getCurrent().navigate(ManageView.class);
                 refreshTextField(event.getValue());
-//                editorDiv.remove(formLayout);
-//                FormLayout formLayout = new FormLayout();
-//                userName = new TextField("Pracownik");
-//                mealName = new TextField("Danie");
-//                userName.setValue(event.getValue().getUserName());
-//                mealName.setValue(event.getValue().getMealName());
-//                formLayout.add(userName, mealName);
-//                formLayout.add(userName, mealName);
-//                editorDiv.add(formLayout);
             } else {
                 UI.getCurrent().navigate(ManageView.class);
             }
         });
-        UserInfo userInfo = new UserInfo(UUID.randomUUID().toString(), "Steve Lange");
-        binder = new CollaborationBinder<>(MyOrder.class, userInfo);
-
-        // Bind fields. This is where you'd define e.g. validation rules
-
-        binder.bindInstanceFields(this);
 
         FormLayout formLayout2Col = new FormLayout();
         formLayout2Col.getStyle().set("flex-grow", "1");
@@ -132,12 +107,16 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
         setSelectSampleData();
 
 
+        infoTextField.setLabel("Ustaw informację dnia");
+        infoTextField.setHelperText("Brak informacji - ustaw to pole puste");
+        infoTextField.setValue("");
+        infoTextField.setClearButtonVisible(true);
+        infoTextField.setPrefixComponent(VaadinIcon.MAP_MARKER.create());
+
         formLayout2Col.add(select);
         formLayout2Col.add(choseButton);
         formLayout2Col.add(infoTextField);
         formLayout2Col.add(setButton);
-//        formLayout2Col.add(menu);
-
         createGridAndEditorLayout(splitLayout);
         splitLayout.addToSecondary(formLayout2Col);
         add(splitLayout);
@@ -168,24 +147,9 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
         formLayout.add(userName, mealName);
         editorDiv.add(formLayout);
     }
-
-
     private void refreshGrid() {
         grid.select(null);
         grid.getDataProvider().refreshAll();
-    }
-    private void clearForm() {
-        populateForm(null);
-    }
-
-    private void populateForm(MyOrder value) {
-        this.myOrder = value;
-        String topic = null;
-        if (this.myOrder != null && this.myOrder.getId() != null) topic = "myOrder/" + this.myOrder.getId();
-
-        binder.setTopic(topic, () -> this.myOrder);
-
-
     }
     private void createButtonLayout(Div editorLayoutDiv) {  // NAPISAĆ TEST
         buttonLayout.setClassName("button-layout");
@@ -194,14 +158,12 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
         buttonLayout.add(order, edit);
         editorLayoutDiv.add(buttonLayout);
     }
-
     private void setSelectSampleData() {   // NAPISAĆ TEST
         List<Restaurant> restaurants = restaurantService.list();
         select.setItems(restaurants);
         select.setItemLabelGenerator(restaurant -> ((Restaurant) restaurant).getName());
 //        select.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((SampleItem) item).disabled())); // TUTAJ DOPISAĆ KOD JEŚLI UŻYTOWNIK NIE KORZYSTAŁ Z RESTAURACJI TO NIE MOŻE JEJ WYBRAĆ
     }
-
     private void clickChoseListener(Button button) { // NAPISAĆ TEST
         button.addClickListener(e -> {
             try {
