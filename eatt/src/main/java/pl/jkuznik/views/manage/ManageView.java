@@ -34,6 +34,7 @@ import pl.jkuznik.data.restaurant.RestaurantService;
 import pl.jkuznik.views.MainLayout;
 import pl.jkuznik.views.edit.EditView;
 
+import java.util.EventListener;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,8 +53,8 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
     Button setButton = new Button("Ustaw");
     private final Grid<MyOrder> grid = new Grid<>(MyOrder.class, false);
     private final CollaborationBinder<MyOrder> binder;
-    private TextField userName;
-    private TextField mealName;
+    private TextField userName =  new TextField("Pracownik");
+    private TextField mealName = new TextField("Danie");
     private Button order = new Button("Wyślij zamówienie");
     private Button edit = new Button("Edytuj");
     private TextField infoTextField = new TextField();
@@ -101,15 +102,16 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
                 UI.getCurrent().navigate(ManageView.class);
-                editorDiv.remove(formLayout);
-                FormLayout formLayout = new FormLayout();
-                userName = new TextField("Pracownik");
-                mealName = new TextField("Danie");
-                userName.setValue(event.getValue().getUserName());
-                mealName.setValue(event.getValue().getMealName());
-                formLayout.add(userName, mealName);
-                formLayout.add(userName, mealName);
-                editorDiv.add(formLayout);
+                refreshTextField(event.getValue());
+//                editorDiv.remove(formLayout);
+//                FormLayout formLayout = new FormLayout();
+//                userName = new TextField("Pracownik");
+//                mealName = new TextField("Danie");
+//                userName.setValue(event.getValue().getUserName());
+//                mealName.setValue(event.getValue().getMealName());
+//                formLayout.add(userName, mealName);
+//                formLayout.add(userName, mealName);
+//                editorDiv.add(formLayout);
             } else {
                 UI.getCurrent().navigate(ManageView.class);
             }
@@ -147,45 +149,26 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
     }
 
     private void createGridAndEditorLayout(SplitLayout splitLayout) {
-//        Div editorLayoutDiv = new Div();
         editorLayoutDiv.setClassName("editor-layout");
-
-//        Div editorDiv = new Div();
         editorDiv.setClassName("editor");
+        wrapper.setClassName("grid-wrapper");
+
         editorLayoutDiv.add(editorDiv);
-
-        userName = new TextField("Pracownik");
-        mealName = new TextField("Danie");
-
         formLayout.add(userName, mealName);
-
         editorDiv.add(formLayout);
         createButtonLayout(editorLayoutDiv);
-
-        wrapper.setClassName("grid-wrapper");
         splitLayout.addToPrimary(wrapper, editorLayoutDiv);
         wrapper.add(grid);
     }
-    private void createEditorLayout(SplitLayout splitLayout, String user, String meal) {
-//        Div editorLayoutDiv = new Div();
-        editorLayoutDiv.setClassName("editor-layout");
-
-//        Div editorDiv = new Div();
-        editorDiv.setClassName("editor");
-        editorLayoutDiv.add(editorDiv);
-
-        FormLayout formLayout = new FormLayout();
-        userName = new TextField("Pracownik");
-        mealName = new TextField("Danie");
-        userName.setValue(user);
-        mealName.setValue(meal);
+    private void refreshTextField(MyOrder myOrder) {
+        formLayout.remove(userName, mealName);
+        editorDiv.remove(formLayout);
+        userName.setValue(myOrder.getUserName());
+        mealName.setValue(myOrder.getMealName());
         formLayout.add(userName, mealName);
-
         editorDiv.add(formLayout);
-        createButtonLayout(editorLayoutDiv);
-
-        splitLayout.addToSecondary(editorLayoutDiv);
     }
+
 
     private void refreshGrid() {
         grid.select(null);
@@ -198,14 +181,10 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
     private void populateForm(MyOrder value) {
         this.myOrder = value;
         String topic = null;
-        if (this.myOrder != null && this.myOrder.getId() != null) {
-            topic = "myOrder/" + this.myOrder.getId();
-//            avatarGroup.getStyle().set("visibility", "visible");
-        } else {
-//            avatarGroup.getStyle().set("visibility", "hidden");
-        }
+        if (this.myOrder != null && this.myOrder.getId() != null) topic = "myOrder/" + this.myOrder.getId();
+
         binder.setTopic(topic, () -> this.myOrder);
-//        avatarGroup.setTopic(topic);
+
 
     }
     private void createButtonLayout(Div editorLayoutDiv) {  // NAPISAĆ TEST
@@ -303,28 +282,20 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
             for (MyOrder myOrder : myOrders){
                 if (myOrder.isActive()) myOrder.setActive(false);
             }
-            Notification n = Notification.show("Wysłano zamówienie.");
-            n.setPosition(Notification.Position.MIDDLE);
 
             myOrderService.updateAll(myOrders);
             refreshGrid();
+            Notification n = Notification.show("Wysłano zamówienie.");
+            n.setPosition(Notification.Position.MIDDLE);
         });
     }
     private void clickEditListener(Button button) {
         button.addClickListener( e -> {
-
             try {
                 if (this.myOrder == null) {
                     this.myOrder = new MyOrder();
                 }
                 binder.writeBean(this.myOrder);
-                myOrder.setUserName(" ");
-                myOrder.setMealName(" ");
-                myOrderService.update(this.myOrder);
-                clearForm();
-                refreshGrid();
-                Notification.show("Zmieniono").setPosition(Notification.Position.BOTTOM_END);
-                UI.getCurrent().navigate(EditView.class);
             } catch (ObjectOptimisticLockingFailureException exception) {
                 Notification n = Notification.show(
                         "Error updating the data. Somebody else has updated the record while you were making changes.");
@@ -334,18 +305,18 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
                 Notification.show("Failed to update the data. Check again that all values are valid");
             }
 
-//            Email sendOrder = new Email(orders);
-//            sendOrder.sendMail();
             List<MyOrder> myOrders = myOrderService.list();
 
             for (MyOrder myOrder : myOrders){
-                if (myOrder.isActive()) myOrder.setActive(false);
+                if ((myOrder.getUserName().equals(this.myOrder.getUserName()) && myOrder.isActive())) {
+                    myOrder.setMealName(mealName.getValue());
+                }
             }
-            Notification n = Notification.show("Wysłano zamówienie.");
-            n.setPosition(Notification.Position.MIDDLE);
 
             myOrderService.updateAll(myOrders);
             refreshGrid();
+            Notification.show("Zmieniono").setPosition(Notification.Position.BOTTOM_END);
+            UI.getCurrent().navigate(ManageView.class);
         });
     }
 }
