@@ -4,10 +4,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import pl.jkuznik.data.AbstractEntity;
 
 @Entity
-public class Meal {
-//public class Dishes extends AbstractEntity {
+public class Meal extends AbstractEntity {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,7 +17,7 @@ public class Meal {
     private String description;
     private String allergens;
     private String nutritions;
-    private int restaurantId;
+    private String restaurantName;
 
     public Long getId() {
         return id;
@@ -57,11 +58,12 @@ public class Meal {
     public void setNutritions(String nutritions) {
         this.nutritions = nutritions;
     }
-    public int getRestaurantId() {
-        return restaurantId;
+
+    public String getRestaurantName() {
+        return restaurantName;
     }
 
-    public void setRestaurantId(int restaurantId) {
-        this.restaurantId = restaurantId;
+    public void setRestaurantName(String restaurantName) {
+        this.restaurantName = restaurantName;
     }
 }

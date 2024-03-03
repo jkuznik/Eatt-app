@@ -11,13 +11,17 @@ public class RandomSentence {
     public String getSentence() {
         Random random = new Random();
         int size = sentences.size();
+        if (size==0) return "Brak sentencji w bazie danych";
         return sentences.get(random.nextInt(size));
     }
-    public void clearSentences(String sentence) {
+    public void clearSentences() {
         sentences.clear();
     }
-
-    public void setSentence(String text) {
+    public void addSentence(String text) {
             sentences.add(text);
     }
+    public int size(){
+        return sentences.size();
+    }
+
 }

@@ -69,7 +69,7 @@ public class MyOrderView extends Composite<VerticalLayout>  {
         h1.setWidth("max-content");
 
         if (getMyOrder(loggedUser) != null) currentMyOrder = getMyOrder(loggedUser).getMealName();
-        else currentMyOrder = "Nie wybrałeś jeszcze potrawy";
+        else currentMyOrder = "Nie wybrano potrawy. Nie zastanawiaj się długo, kto się spóźni - ten nie je.";
 
         h2.setText(currentMyOrder);
         h2.setWidth("max-content");
@@ -142,7 +142,7 @@ public class MyOrderView extends Composite<VerticalLayout>  {
         if (restaurant == null) return mealsNames;
 
         List<Meal> mealList = meals.stream()
-                .filter(d -> d.getRestaurantId() == restaurant.getId())
+                .filter(d -> d.getRestaurantName() == restaurant.getName())
                 .toList();
         for (Meal d : mealList) {
             mealsNames.add(d.getName());

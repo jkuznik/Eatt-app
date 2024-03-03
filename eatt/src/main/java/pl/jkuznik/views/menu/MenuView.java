@@ -44,9 +44,12 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
     private final Button absent = new Button("Odwołaj zamówienie");
 
     private RadioButtonGroup radioGroup = new RadioButtonGroup();
-        private VerticalLayout descriptionLayout = new VerticalLayout();
+    private VerticalLayout descriptionLayout = new VerticalLayout();
     private VerticalLayout allergensLayout = new VerticalLayout();
     private VerticalLayout nutritionsLayout = new VerticalLayout();
+    private Span description = new Span();
+    private Span allergens= new Span();
+    private Span nutritions= new Span();
     private String restaurantName;
     public MenuView(AuthenticatedUser authenticatedUser, RestaurantService restaurantService, MealService mealService, MyOrderService myOrderService) {
         this.authenticatedUser = authenticatedUser;
@@ -90,29 +93,27 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
     radioGroup.addValueChangeListener(event -> setAccordionSampleDataAndRefresh(accordion, radioGroup, order, change, absent, descriptionLayout, allergensLayout, nutritionsLayout));
     }
     private void setAccoriondSampleData(Accordion accordion, RadioButtonGroup radioGroup){
-        Span description;
-        Span allergens;
-        Span nutritions;
-
         if (getRestaurant() == null) description = new Span("Wybierz restaurację");
         else description = new Span(getMeal(getRestaurant(), radioGroup).getDescription());
+        descriptionLayout = new VerticalLayout();   // MOŻE GENEROWAĆ PROBLEMY
         descriptionLayout.setSpacing(true);
         descriptionLayout.setPadding(true);
         descriptionLayout.add(description);
         accordion.add("Opis potrawy - " + getMeal(getRestaurant(), radioGroup).getName(), descriptionLayout);
         if (getRestaurant() == null) allergens = new Span("Wybierz restaurację");
         else allergens = new Span(getMeal(getRestaurant(), radioGroup).getAllergens());
+        allergensLayout = new VerticalLayout();     // MOŻE GENEROWAĆ PROBLEMY
         allergensLayout.setSpacing(true);
         allergensLayout.setPadding(true);
         allergensLayout.add(allergens);
         accordion.add("Alergeny", allergensLayout);
         if (getRestaurant() == null) nutritions = new Span("Wybierz restaurację");
         else nutritions = new Span(getMeal(getRestaurant(), radioGroup).getNutritions());
+        nutritionsLayout = new VerticalLayout();    // MOŻE GENEROWAĆ PROBLEMY
         nutritionsLayout.setSpacing(false);
         nutritionsLayout.setPadding(true);
         nutritionsLayout.add(nutritions);
         accordion.add("Wartości odżywcze", nutritionsLayout);
-
     }
 
     private void setAccordionSampleDataAndRefresh(Accordion accordion, RadioButtonGroup radioGroup, Button button1, Button button2, Button button3, VerticalLayout verticalLayout1, VerticalLayout verticalLayout2, VerticalLayout verticalLayout3) {
@@ -121,7 +122,6 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
         accordion.remove(verticalLayout3);
         getContent().remove(accordion);
         getContent().remove(radioGroup);
-
 
         List<MyOrder> actualMyOrders = myOrderService.list();
         User loggedUser = getLoggedUser();
@@ -139,30 +139,8 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
             absent.addThemeVariants(ButtonVariant.LUMO_ERROR);
             getContent().add(button3);
         }
-        Span description;
-        Span allergens;
-        Span nutritions;
-        if (getRestaurant() == null) description = new Span("Wybierz restaurację");
-        else description = new Span(getMeal(getRestaurant(), radioGroup).getDescription());
-        descriptionLayout = new VerticalLayout();
-        descriptionLayout.setSpacing(true);
-        descriptionLayout.setPadding(true);
-        descriptionLayout.add(description);
-        accordion.add("Opis potrawy - " + getMeal(getRestaurant(), radioGroup).getName(), descriptionLayout);
-        if (getRestaurant() == null) allergens = new Span("Wybierz restaurację");
-        else allergens = new Span(getMeal(getRestaurant(), radioGroup).getAllergens());
-        allergensLayout = new VerticalLayout();
-        allergensLayout.setSpacing(true);
-        allergensLayout.setPadding(true);
-        allergensLayout.add(allergens);
-        accordion.add("Alergeny", allergensLayout);
-        if (getRestaurant() == null) nutritions = new Span("Wybierz restaurację");
-        else nutritions = new Span(getMeal(getRestaurant(), radioGroup).getNutritions());
-        nutritionsLayout = new VerticalLayout();
-        nutritionsLayout.setSpacing(false);
-        nutritionsLayout.setPadding(true);
-        nutritionsLayout.add(nutritions);
-        accordion.add("Wartości odżywcze", nutritionsLayout);
+        setAccoriondSampleData(accordion, radioGroup);
+
         getContent().add(radioGroup);
         getContent().add(accordion);
         if (any.isEmpty()) {
@@ -187,13 +165,13 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
         if (restaurant == null) return meals.get(0);
         if (radioGroup.getValue() == null) {
             return meals.stream()
-                    .filter(d -> d.getRestaurantId() == restaurant.getId())
+                    .filter(d -> d.getRestaurantName() == restaurant.getName())
                     .findFirst()
                     .orElse(meals.get(0));
         }
         return meals.stream()
                 .filter(d -> {
-                    return (d.getRestaurantId() == restaurant.getId() &&
+                    return (d.getRestaurantName() == restaurant.getName() &&
                             radioGroup.getValue().toString().equals(d.getName()));
                 })
                 .findAny()
@@ -205,7 +183,7 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
         if (restaurant == null) return mealsNames;
 
         List<Meal> mealList = meals.stream()
-                .filter(d -> d.getRestaurantId() == restaurant.getId())
+                .filter(d -> d.getRestaurantName() == restaurant.getName())
                 .toList();
 
         for (Meal d : mealList) {

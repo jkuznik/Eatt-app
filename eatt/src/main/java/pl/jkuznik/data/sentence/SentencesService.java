@@ -1,13 +1,12 @@
 package pl.jkuznik.data.sentence;
 
-import java.util.List;
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import pl.jkuznik.data.sentence.Sentence;
-import pl.jkuznik.data.sentence.SentenceRepository;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SentencesService {
@@ -41,7 +40,6 @@ public class SentencesService {
     public Page<Sentence> list(Pageable pageable, Specification<Sentence> filter) {
         return repository.findAll(filter, pageable);
     }
-
     public int count() {
         return (int) repository.count();
     }

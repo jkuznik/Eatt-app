@@ -1,11 +1,11 @@
 package pl.jkuznik.views.edit;
 
+import com.vaadin.flow.component.html.Span;
 import jakarta.annotation.security.RolesAllowed;
-import pl.jkuznik.data.samplePerson.SamplePerson;
 import pl.jkuznik.data.meal.Meal;
 import pl.jkuznik.data.meal.MealService;
 import pl.jkuznik.data.restaurant.RestaurantService;
-import pl.jkuznik.data.samplePerson.SamplePersonService;
+import pl.jkuznik.data.meal.MealService;
 import pl.jkuznik.views.MainLayout;
 
 import com.vaadin.collaborationengine.CollaborationAvatarGroup;
@@ -40,38 +40,36 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 @PageTitle("Edit")
-@Route(value = "collaborative-master-detail/:samplePersonID?/:action?(edit)", layout = MainLayout.class)
+@Route(value = "collaborative-master-detail/:mealID?/:action?(edit)", layout = MainLayout.class)
 @RolesAllowed("ADMIN")
 @Uses(Icon.class)
 public class EditView extends Div implements BeforeEnterObserver {
 
-    private final String SAMPLEPERSON_ID = "samplePersonID";
-    private final String SAMPLEPERSON_EDIT_ROUTE_TEMPLATE = "collaborative-master-detail/%s/edit";
+    private final String MEAL_ID = "mealID";
+    private final String MEAL_EDIT_ROUTE_TEMPLATE = "collaborative-master-detail/%s/edit";
 
-    private final Grid<SamplePerson> grid = new Grid<>(SamplePerson.class, false);
+    private final Grid<Meal> grid = new Grid<>(Meal.class, false);
 
     CollaborationAvatarGroup avatarGroup;
 
-    private TextField moRestaurantName;
-    private TextField moMealName;
-    private TextField meDescription;
-    private TextField meAllergens;
-    private TextField meNutritions;
+    private TextField resaurantId;
+    private TextField name;
+    private TextField description;
+    private TextField allergens;
+    private TextField nutritions;
 
     private final Button cancel = new Button("Anuluj");
     private final Button save = new Button("Zapisz");
     private final Button edit = new Button("Edytuj");
 
-    private final CollaborationBinder<SamplePerson> binder;
+    private final CollaborationBinder<Meal> binder;
 
-    private SamplePerson samplePerson;
+    private Meal meal;
 
-    private final SamplePersonService samplePersonService;
     private final MealService mealService;
     private final RestaurantService restaurantService;
 
-    public EditView(SamplePersonService samplePersonService, MealService mealService, RestaurantService restaurantService) {
-        this.samplePersonService = samplePersonService;
+    public EditView(MealService mealService, RestaurantService restaurantService) {
         this.mealService = mealService;
         this.restaurantService = restaurantService;
         addClassNames("edit-view");
@@ -95,26 +93,25 @@ public class EditView extends Div implements BeforeEnterObserver {
 
         add(splitLayout);
 
-        Meal meal = new Meal();
-
         // Configure Grid
-        grid.addColumn("moRestaurantName").setAutoWidth(true).setHeader("Restauracja");
-        grid.addColumn("moMealName").setAutoWidth(true).setHeader("Danie");
-        grid.addColumn("meDescription").setAutoWidth(true).setHeader("Opis");
-        grid.addColumn("meAllergens").setAutoWidth(true).setHeader("Alergeny");
-        grid.addColumn("meNutritions").setAutoWidth(true).setHeader("Wartości");
+        grid.addColumn("restaurantName").setAutoWidth(true).setHeader("Restauracja");
+        grid.addColumn("name").setAutoWidth(true).setHeader("Danie");
+        grid.addColumn("description").setAutoWidth(true).setHeader("Opis");
+        grid.addColumn("allergens").setAutoWidth(true).setHeader("Alergeny");
+        grid.addColumn("nutritions").setAutoWidth(true).setHeader("Wartości");
 
-        grid.setItems(query -> samplePersonService.list(
+        grid.setItems(query -> mealService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream()
-                .filter( sp -> !sp.getMoRestaurantName().isBlank())
+                .filter( m -> m.getRestaurantName().equals("Atmosfera"))
         );
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
         // when a row is selected or deselected, populate form
         grid.asSingleSelect().addValueChangeListener(event -> {
-            if (event.getValue() != null) {
-                UI.getCurrent().navigate(String.format(SAMPLEPERSON_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
+            if (event.getValue() != null) {Span description;
+                Span allergens;
+                Span nutritions;
             } else {
                 clearForm();
                 UI.getCurrent().navigate(EditView.class);
@@ -122,7 +119,7 @@ public class EditView extends Div implements BeforeEnterObserver {
         });
 
         // Configure Form
-        binder = new CollaborationBinder<>(SamplePerson.class, userInfo);
+        binder = new CollaborationBinder<>(Meal.class, userInfo);
 
         // Bind fields. This is where you'd define e.g. validation rules
 
@@ -136,16 +133,16 @@ public class EditView extends Div implements BeforeEnterObserver {
         save.addClickListener(e -> {
             LocalDate localDate = LocalDate.of(1000, 01, 01);
             try {
-                if (this.samplePerson == null) {
-                    this.samplePerson = new SamplePerson();
+                if (this.meal == null) {
+                    this.meal = new Meal();
                 }
-                binder.writeBean(this.samplePerson);
-                samplePerson.setUserName(" ");
-                samplePerson.setUserEmail("a@a.aa");
-                samplePerson.setMoComment(" ");
-                samplePerson.setMoRating(6);
-                samplePerson.setOrderDate(localDate);
-                samplePersonService.update(this.samplePerson);
+                binder.writeBean(this.meal);
+//                meal.setUserName(" ");
+//                meal.setUserEmail("a@a.aa");
+//                meal.setMoComment(" ");
+//                meal.setMoRating(6);
+//                meal.setOrderDate(localDate);
+//                mealService.update(this.meal);
                 clearForm();
                 refreshGrid();
                 Notification.show("Zmieniono").setPosition(Position.BOTTOM_END);
@@ -163,14 +160,14 @@ public class EditView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<Long> samplePersonId = event.getRouteParameters().get(SAMPLEPERSON_ID).map(Long::parseLong);
-        if (samplePersonId.isPresent()) {
-            Optional<SamplePerson> samplePersonFromBackend = samplePersonService.get(samplePersonId.get());
-            if (samplePersonFromBackend.isPresent()) {
-                populateForm(samplePersonFromBackend.get());
+        Optional<Long> mealId = event.getRouteParameters().get(MEAL_ID).map(Long::parseLong);
+        if (mealId.isPresent()) {
+            Optional<Meal> mealFromBackend = mealService.get(mealId.get());
+            if (mealFromBackend.isPresent()) {
+                populateForm(mealFromBackend.get());
             } else {
                 Notification.show(
-                        String.format("The requested samplePerson was not found, ID = %d", samplePersonId.get()), 3000,
+                        String.format("The requested meal was not found, ID = %d", mealId.get()), 3000,
                         Notification.Position.BOTTOM_START);
                 // when a row is selected but the data is no longer available,
                 // refresh grid
@@ -189,12 +186,12 @@ public class EditView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
-        moRestaurantName = new TextField("Restauracja");
-        moMealName = new TextField("Danie");
-        meDescription = new TextField("Opis");
-        meAllergens = new TextField("Alergeny");
-        meNutritions = new TextField("Wartości");
-        formLayout.add(moRestaurantName, moMealName, meDescription, meAllergens, meNutritions);
+        resaurantId = new TextField("Restauracja");
+        name = new TextField("Danie");
+        description = new TextField("Opis");
+        allergens = new TextField("Alergeny");
+        nutritions = new TextField("Wartości");
+        formLayout.add(resaurantId, name, description, allergens, nutritions);
 
         editorDiv.add(avatarGroup, formLayout);
         createButtonLayout(editorLayoutDiv);
@@ -228,16 +225,16 @@ public class EditView extends Div implements BeforeEnterObserver {
         populateForm(null);
     }
 
-    private void populateForm(SamplePerson value) {
-        this.samplePerson = value;
+    private void populateForm(Meal value) {
+        this.meal = value;
         String topic = null;
-        if (this.samplePerson != null && this.samplePerson.getId() != null) {
-            topic = "samplePerson/" + this.samplePerson.getId();
+        if (this.meal != null && this.meal.getId() != null) {
+            topic = "meal/" + this.meal.getId();
             avatarGroup.getStyle().set("visibility", "visible");
         } else {
             avatarGroup.getStyle().set("visibility", "hidden");
         }
-        binder.setTopic(topic, () -> this.samplePerson);
+        binder.setTopic(topic, () -> this.meal);
         avatarGroup.setTopic(topic);
 
     }

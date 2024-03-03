@@ -67,7 +67,6 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
 
     record SampleItem(String value, String label, Boolean disabled) {
     }
-
     public ManageView(RestaurantService restaurantService, InformationService informationService, MyOrderService myOrdeService) {
         this.restaurantService = restaurantService;
         this.informationService = informationService;
@@ -105,7 +104,6 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
         select.setWidth("min-content");
         select.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
         setSelectSampleData();
-
 
         infoTextField.setLabel("Ustaw informację dnia");
         infoTextField.setHelperText("Brak informacji - ustaw to pole puste");

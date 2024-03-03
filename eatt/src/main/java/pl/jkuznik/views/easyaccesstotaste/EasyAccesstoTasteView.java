@@ -77,7 +77,7 @@ public class EasyAccesstoTasteView extends Composite<VerticalLayout> {
         List<Sentence> sentences = sentencesService.list();
 
         for (Sentence s : sentences) {
-            randomSentence.setSentence(s.getText());
+            randomSentence.addSentence(s.getText());
         }
 
         return randomSentence.getSentence();
