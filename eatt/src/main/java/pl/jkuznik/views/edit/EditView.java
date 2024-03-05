@@ -4,6 +4,8 @@ import com.vaadin.flow.component.html.Span;
 import jakarta.annotation.security.RolesAllowed;
 import pl.jkuznik.data.meal.Meal;
 import pl.jkuznik.data.meal.MealService;
+import pl.jkuznik.data.myOrder.MyOrder;
+import pl.jkuznik.data.restaurant.Restaurant;
 import pl.jkuznik.data.restaurant.RestaurantService;
 import pl.jkuznik.data.meal.MealService;
 import pl.jkuznik.views.MainLayout;
@@ -34,10 +36,15 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 
 import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import pl.jkuznik.views.manage.ManageView;
 
 @PageTitle("Edit")
 @Route(value = "collaborative-master-detail/:mealID?/:action?(edit)", layout = MainLayout.class)
@@ -52,7 +59,7 @@ public class EditView extends Div implements BeforeEnterObserver {
 
     CollaborationAvatarGroup avatarGroup;
 
-    private TextField resaurantId;
+    private TextField restaurantName;
     private TextField name;
     private TextField description;
     private TextField allergens;
@@ -63,8 +70,14 @@ public class EditView extends Div implements BeforeEnterObserver {
     private final Button edit = new Button("Edytuj");
 
     private final CollaborationBinder<Meal> binder;
+    private SplitLayout splitLayout = new SplitLayout();
+    private FormLayout formLayout = new FormLayout();
+    private Div editorDiv = new Div();
+    private Div editorLayoutDiv = new Div();
 
     private Meal meal;
+    private String currentRestaurantName;
+    private String currentMealName;
 
     private final MealService mealService;
     private final RestaurantService restaurantService;
@@ -81,12 +94,9 @@ public class EditView extends Div implements BeforeEnterObserver {
         // avatar by passing an url to the image as a third parameter, or by
         // configuring an `ImageProvider` to `avatarGroup`.
         UserInfo userInfo = new UserInfo(UUID.randomUUID().toString(), "Steve Lange");
-
-        // Create UI
-        SplitLayout splitLayout = new SplitLayout();
-
         avatarGroup = new CollaborationAvatarGroup(userInfo, null);
         avatarGroup.getStyle().set("visibility", "hidden");
+        // Create UI
 
         createGridLayout(splitLayout);
         createEditorLayout(splitLayout);
@@ -103,15 +113,15 @@ public class EditView extends Div implements BeforeEnterObserver {
         grid.setItems(query -> mealService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream()
-                .filter( m -> m.getRestaurantName().equals("Atmosfera"))
+                .sorted(Comparator.comparing(Meal::getRestaurantName))
         );
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
         // when a row is selected or deselected, populate form
         grid.asSingleSelect().addValueChangeListener(event -> {
-            if (event.getValue() != null) {Span description;
-                Span allergens;
-                Span nutritions;
+            if (event.getValue() != null) {
+                UI.getCurrent().navigate(EditView.class);
+                refreshTextField(event.getValue());
             } else {
                 clearForm();
                 UI.getCurrent().navigate(EditView.class);
@@ -130,32 +140,7 @@ public class EditView extends Div implements BeforeEnterObserver {
             refreshGrid();
         });
 
-        save.addClickListener(e -> {
-            LocalDate localDate = LocalDate.of(1000, 01, 01);
-            try {
-                if (this.meal == null) {
-                    this.meal = new Meal();
-                }
-                binder.writeBean(this.meal);
-//                meal.setUserName(" ");
-//                meal.setUserEmail("a@a.aa");
-//                meal.setMoComment(" ");
-//                meal.setMoRating(6);
-//                meal.setOrderDate(localDate);
-//                mealService.update(this.meal);
-                clearForm();
-                refreshGrid();
-                Notification.show("Zmieniono").setPosition(Position.BOTTOM_END);
-                UI.getCurrent().navigate(EditView.class);
-            } catch (ObjectOptimisticLockingFailureException exception) {
-                Notification n = Notification.show(
-                        "Error updating the data. Somebody else has updated the record while you were making changes.");
-                n.setPosition(Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
-            } catch (ValidationException validationException) {
-                Notification.show("Failed to update the data. Check again that all values are valid");
-            }
-        });
+        saveClickListener(save);
     }
 
     @Override
@@ -178,53 +163,58 @@ public class EditView extends Div implements BeforeEnterObserver {
     }
 
     private void createEditorLayout(SplitLayout splitLayout) {
-        Div editorLayoutDiv = new Div();
         editorLayoutDiv.setClassName("editor-layout");
 
-        Div editorDiv = new Div();
         editorDiv.setClassName("editor");
         editorLayoutDiv.add(editorDiv);
 
-        FormLayout formLayout = new FormLayout();
-        resaurantId = new TextField("Restauracja");
+        restaurantName = new TextField("Restauracja");
         name = new TextField("Danie");
         description = new TextField("Opis");
         allergens = new TextField("Alergeny");
         nutritions = new TextField("Wartości");
-        formLayout.add(resaurantId, name, description, allergens, nutritions);
+        formLayout.add(restaurantName, name, description, allergens, nutritions);
 
         editorDiv.add(avatarGroup, formLayout);
         createButtonLayout(editorLayoutDiv);
 
         splitLayout.addToSecondary(editorLayoutDiv);
     }
-
+    private void refreshTextField(Meal meal) {
+        formLayout.remove(restaurantName, name, description, allergens, nutritions);
+        editorDiv.remove(formLayout);
+        restaurantName.setValue(meal.getRestaurantName());
+        currentRestaurantName = meal.getRestaurantName();
+        name.setValue(meal.getName());
+        currentMealName = meal.getName();
+        description.setValue(meal.getDescription());
+        allergens.setValue(meal.getAllergens());
+        nutritions.setValue(meal.getNutritions());
+        formLayout.add(restaurantName, name, description, allergens, nutritions);
+        editorDiv.add(formLayout);
+    }
     private void createButtonLayout(Div editorLayoutDiv) {
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setClassName("button-layout");
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        edit.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        edit.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
         buttonLayout.add(save, cancel, edit);
         editorLayoutDiv.add(buttonLayout);
     }
-
     private void createGridLayout(SplitLayout splitLayout) {
         Div wrapper = new Div();
         wrapper.setClassName("grid-wrapper");
         splitLayout.addToPrimary(wrapper);
         wrapper.add(grid);
     }
-
     private void refreshGrid() {
         grid.select(null);
         grid.getDataProvider().refreshAll();
     }
-
     private void clearForm() {
         populateForm(null);
     }
-
     private void populateForm(Meal value) {
         this.meal = value;
         String topic = null;
@@ -236,6 +226,54 @@ public class EditView extends Div implements BeforeEnterObserver {
         }
         binder.setTopic(topic, () -> this.meal);
         avatarGroup.setTopic(topic);
+
+    }
+    private void saveClickListener(Button button){
+        button.addClickListener(e -> {
+            try {
+                if (this.meal == null) {
+                    this.meal = new Meal();
+                }
+                boolean restaurantNameChange = false;
+                binder.writeBean(this.meal);
+                List<Meal> meals = mealService.list();
+                for (Meal meal : meals){
+                    if ( meal.getRestaurantName().equals(currentRestaurantName)){
+                        restaurantNameChange = true;
+                    }
+                    if ( meal.getName().equals(currentMealName)){
+                        meal.setName(this.meal.getName());
+                        meal.setDescription(this.meal.getDescription());
+                        meal.setAllergens(this.meal.getAllergens());
+                        meal.setNutritions(this.meal.getNutritions());
+                        mealService.update(meal);
+                    }
+                }
+                List<Restaurant> restaurants = restaurantService.list();
+                if (restaurantNameChange){
+                    List<Restaurant> restaurants1 = restaurants.stream()
+                            .filter(rest -> rest.getName().equals(currentRestaurantName))
+                            .toList();
+
+                    restaurants1.forEach(r -> r.setName(this.meal.getRestaurantName()));
+                    restaurantService.updateAll(restaurants1);
+                }
+
+                clearForm();
+                refreshGrid();
+                Notification.show("Zmieniono").setPosition(Position.BOTTOM_END);
+                UI.getCurrent().navigate(EditView.class);
+            } catch (ObjectOptimisticLockingFailureException exception) {
+                Notification n = Notification.show(
+                        "Error updating the data. Somebody else has updated the record while you were making changes.");
+                n.setPosition(Position.MIDDLE);
+                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            } catch (ValidationException validationException) {
+                Notification.show("Failed to update the data. Check again that all values are valid");
+            }
+        });
+    }
+    private void calcelCLickListener(){
 
     }
 }

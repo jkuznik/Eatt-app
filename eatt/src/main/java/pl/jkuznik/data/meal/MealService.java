@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import pl.jkuznik.data.meal.Meal;
 import pl.jkuznik.data.meal.MealRepository;
+import pl.jkuznik.data.myOrder.MyOrder;
 
 @Service
 public class MealService {
@@ -24,6 +25,9 @@ public class MealService {
 
     public Meal update(Meal entity) {
         return repository.save(entity);
+    }
+    public void updateAll(List<Meal> meals) {
+        repository.saveAll(meals);
     }
 
     public void delete(Long id) {
