@@ -7,15 +7,7 @@ import pl.jkuznik.data.AbstractEntity;
 @Table(name ="sentence")
 public class Sentence extends AbstractEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     private String text;
-
-    @Override
-    public Long getId() {
-        return id;
-    }
 
     public String getText() {
         return text;

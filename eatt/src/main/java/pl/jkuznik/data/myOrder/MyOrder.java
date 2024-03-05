@@ -1,23 +1,15 @@
 package pl.jkuznik.data.myOrder;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import pl.jkuznik.data.AbstractEntity;
-import pl.jkuznik.data.user.Role;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
-import pl.jkuznik.data.AbstractEntity;
-
-import java.time.LocalDate;
 
 @Entity
 @Table(name ="my_order")
 public class MyOrder extends AbstractEntity {
 
-    @Id
+    /*@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id;*/
     private String restaurantName;
     private String mealName;
     private String userName;
@@ -28,10 +20,6 @@ public class MyOrder extends AbstractEntity {
     private boolean isActive;
 
     public MyOrder() {
-    }
-    @Override
-    public Long getId() {
-        return id;
     }
     public String getRestaurantName() {
         return restaurantName;

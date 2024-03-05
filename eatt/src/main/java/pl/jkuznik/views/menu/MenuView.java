@@ -204,13 +204,13 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
                     newOrder.setRestaurantName(radioGroup.getLabel());
                     newOrder.setMealName(radioGroup.getValue().toString());
                     newOrder.setUserName(loggedUser.getName());
+                    newOrder.setNotes("Bez uwag");
                     newOrder.setComment("Dodaj komentarz");
                     newOrder.setRating(0);
                     newOrder.setActive(true);
 
                     actualMyOrders.add(newOrder);
 
-                    myOrderService.update(newOrder);
                     myOrderService.updateAll(actualMyOrders);
 
                     Notification n = Notification.show("Witaj " + loggedUser.getName() + ". Zamówiono " + radioGroup.getValue().toString() + ". Życzymy smacznego!");

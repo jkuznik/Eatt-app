@@ -1,15 +1,5 @@
 package pl.jkuznik.views.edit;
 
-import com.vaadin.flow.component.html.Span;
-import jakarta.annotation.security.RolesAllowed;
-import pl.jkuznik.data.meal.Meal;
-import pl.jkuznik.data.meal.MealService;
-import pl.jkuznik.data.myOrder.MyOrder;
-import pl.jkuznik.data.restaurant.Restaurant;
-import pl.jkuznik.data.restaurant.RestaurantService;
-import pl.jkuznik.data.meal.MealService;
-import pl.jkuznik.views.MainLayout;
-
 import com.vaadin.collaborationengine.CollaborationAvatarGroup;
 import com.vaadin.collaborationengine.CollaborationBinder;
 import com.vaadin.collaborationengine.UserInfo;
@@ -34,17 +24,19 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
+import jakarta.annotation.security.RolesAllowed;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import pl.jkuznik.data.meal.Meal;
+import pl.jkuznik.data.meal.MealService;
+import pl.jkuznik.data.restaurant.Restaurant;
+import pl.jkuznik.data.restaurant.RestaurantService;
+import pl.jkuznik.views.MainLayout;
 
-import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
-
-import org.springframework.data.domain.PageRequest;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import pl.jkuznik.views.manage.ManageView;
 
 @PageTitle("Edit")
 @Route(value = "collaborative-master-detail/:mealID?/:action?(edit)", layout = MainLayout.class)
@@ -56,31 +48,26 @@ public class EditView extends Div implements BeforeEnterObserver {
     private final String MEAL_EDIT_ROUTE_TEMPLATE = "collaborative-master-detail/%s/edit";
 
     private final Grid<Meal> grid = new Grid<>(Meal.class, false);
-
+    private final Button cancel = new Button("Anuluj");
+    private final Button save = new Button("Zmień");
+    private final Button delete = new Button("Usuń");
+    private final Button add = new Button("Dodaj");
+    private final CollaborationBinder<Meal> binder;
+    private final MealService mealService;
+    private final RestaurantService restaurantService;
     CollaborationAvatarGroup avatarGroup;
-
     private TextField restaurantName;
     private TextField name;
     private TextField description;
     private TextField allergens;
     private TextField nutritions;
-
-    private final Button cancel = new Button("Anuluj");
-    private final Button save = new Button("Zapisz");
-    private final Button edit = new Button("Edytuj");
-
-    private final CollaborationBinder<Meal> binder;
     private SplitLayout splitLayout = new SplitLayout();
     private FormLayout formLayout = new FormLayout();
     private Div editorDiv = new Div();
     private Div editorLayoutDiv = new Div();
-
     private Meal meal;
     private String currentRestaurantName;
     private String currentMealName;
-
-    private final MealService mealService;
-    private final RestaurantService restaurantService;
 
     public EditView(MealService mealService, RestaurantService restaurantService) {
         this.mealService = mealService;
@@ -111,7 +98,7 @@ public class EditView extends Div implements BeforeEnterObserver {
         grid.addColumn("nutritions").setAutoWidth(true).setHeader("Wartości");
 
         grid.setItems(query -> mealService.list(
-                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
+                        PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream()
                 .sorted(Comparator.comparing(Meal::getRestaurantName))
         );
@@ -135,14 +122,11 @@ public class EditView extends Div implements BeforeEnterObserver {
 
         binder.bindInstanceFields(this);
 
-        cancel.addClickListener(e -> {
-            clearForm();
-            refreshGrid();
-        });
-
         saveClickListener(save);
+        cancelCLickListener(cancel);
+        addClickListener(add);
+        deleteClickListener(delete);
     }
-
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         Optional<Long> mealId = event.getRouteParameters().get(MEAL_ID).map(Long::parseLong);
@@ -161,7 +145,6 @@ public class EditView extends Div implements BeforeEnterObserver {
             }
         }
     }
-
     private void createEditorLayout(SplitLayout splitLayout) {
         editorLayoutDiv.setClassName("editor-layout");
 
@@ -198,8 +181,9 @@ public class EditView extends Div implements BeforeEnterObserver {
         buttonLayout.setClassName("button-layout");
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        edit.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
-        buttonLayout.add(save, cancel, edit);
+        delete.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+        add.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        buttonLayout.add(add, cancel, save, delete);
         editorLayoutDiv.add(buttonLayout);
     }
     private void createGridLayout(SplitLayout splitLayout) {
@@ -228,37 +212,39 @@ public class EditView extends Div implements BeforeEnterObserver {
         avatarGroup.setTopic(topic);
 
     }
-    private void saveClickListener(Button button){
+    private void saveClickListener(Button button) {
         button.addClickListener(e -> {
             try {
                 if (this.meal == null) {
                     this.meal = new Meal();
                 }
-                boolean restaurantNameChange = false;
+
                 binder.writeBean(this.meal);
                 List<Meal> meals = mealService.list();
-                for (Meal meal : meals){
-                    if ( meal.getRestaurantName().equals(currentRestaurantName)){
-                        restaurantNameChange = true;
-                    }
-                    if ( meal.getName().equals(currentMealName)){
+                for (Meal meal : meals) {
+
+                    if (meal.getName().equals(currentMealName)) {
                         meal.setName(this.meal.getName());
                         meal.setDescription(this.meal.getDescription());
                         meal.setAllergens(this.meal.getAllergens());
                         meal.setNutritions(this.meal.getNutritions());
-                        mealService.update(meal);
                     }
+                    if (meal.getRestaurantName().equals(currentRestaurantName)) {
+                        meal.setRestaurantName(this.meal.getRestaurantName());
+                    }
+                    mealService.update(meal);
                 }
                 List<Restaurant> restaurants = restaurantService.list();
-                if (restaurantNameChange){
-                    List<Restaurant> restaurants1 = restaurants.stream()
-                            .filter(rest -> rest.getName().equals(currentRestaurantName))
-                            .toList();
+                List<Restaurant> restaurants1 = restaurants.stream()
+                        .filter(rest -> rest.getName().equals(currentRestaurantName))
+                        .toList();
 
-                    restaurants1.forEach(r -> r.setName(this.meal.getRestaurantName()));
-                    restaurantService.updateAll(restaurants1);
-                }
+                restaurants1.forEach(r -> r.setName(this.meal.getRestaurantName()));
+                restaurantService.updateAll(restaurants1);
 
+
+                currentRestaurantName = "";
+                currentMealName = "";
                 clearForm();
                 refreshGrid();
                 Notification.show("Zmieniono").setPosition(Position.BOTTOM_END);
@@ -273,7 +259,105 @@ public class EditView extends Div implements BeforeEnterObserver {
             }
         });
     }
-    private void calcelCLickListener(){
+    private void cancelCLickListener(Button button) {
+        button.addClickListener(e -> {
+            currentRestaurantName = "";
+            currentMealName = "";
+            clearForm();
+            refreshGrid();
+        });
+    }
+    private void addClickListener(Button button){
+        button.addClickListener(e -> {
+            try {
+                if (this.meal == null) {
+                    this.meal = new Meal();
+                }
 
+                binder.writeBean(this.meal);
+                List<Restaurant> restaurants = restaurantService.list();
+                Optional<Restaurant> anyRestaurant = restaurants.stream()
+                        .filter(r -> r.getName().equals(this.meal.getRestaurantName()))
+                        .findAny();
+
+                if ( anyRestaurant.isEmpty() ){
+                    Notification.show("Wpisz poprawnie nazwę restauracji do której chcesz dodać nowe danie").setPosition(Position.BOTTOM_END);
+                    UI.getCurrent().navigate(EditView.class);
+                    return;
+                }
+                if (this.meal.getName().isEmpty()){
+                    Notification.show("Podaj nazwę dania które chcesz dodać").setPosition(Position.BOTTOM_END);
+                    UI.getCurrent().navigate(EditView.class);
+                    return;
+                }
+
+                List<Meal> meals = mealService.list();
+                Optional<Meal> anyMeal = meals.stream()
+                        .filter(m -> m.getRestaurantName().equals(this.meal.getRestaurantName()) && m.getName().equals(this.meal.getName()))
+                        .findAny();
+
+                if (anyMeal.isPresent()) {
+                    Notification.show("Istnieje już danie o tej samej nazwie dla tej restauracji").setPosition(Position.BOTTOM_END);
+                    UI.getCurrent().navigate(EditView.class);
+                    return;
+                }
+
+                Meal newMeal = new Meal();
+                newMeal.setRestaurantName(this.meal.getRestaurantName());
+                newMeal.setName(this.meal.getName());
+                newMeal.setDescription(this.meal.getDescription());
+                newMeal.setAllergens(this.meal.getAllergens());
+                newMeal.setNutritions(this.meal.getNutritions());
+
+                meals.add(newMeal);
+                mealService.update(newMeal);
+                mealService.updateAll(meals);
+
+                currentRestaurantName = "";
+                currentMealName = "";
+                clearForm();
+                refreshGrid();
+                Notification.show("Dodano nowe danie").setPosition(Position.BOTTOM_END);
+                UI.getCurrent().navigate(EditView.class);
+            } catch (ObjectOptimisticLockingFailureException exception) {
+                Notification n = Notification.show(
+                        "Error updating the data. Somebody else has updated the record while you were making changes.");
+                n.setPosition(Position.MIDDLE);
+                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            } catch (ValidationException validationException) {
+                Notification.show("Failed to update the data. Check again that all values are valid");
+            }
+        });
+    }
+    private void deleteClickListener(Button button){
+        button.addClickListener(e -> {
+            try {
+                if (this.meal == null) {
+                    this.meal = new Meal();
+                }
+
+                binder.writeBean(this.meal);
+                List<Meal> meals = mealService.list();
+
+                for(Meal m : meals){
+                    if (m.getRestaurantName().equals(this.meal.getRestaurantName()) &&
+                    m.getName().equals(this.meal.getName())) mealService.delete(m.getId());
+                }
+
+                currentRestaurantName = "";
+                currentMealName = "";
+                clearForm();
+                refreshGrid();
+                Notification.show("Usunięto danie " + this.meal.getName()).setPosition(Position.BOTTOM_END);
+                UI.getCurrent().navigate(EditView.class);
+            } catch (ObjectOptimisticLockingFailureException exception) {
+                Notification n = Notification.show(
+                        "Error updating the data. Somebody else has updated the record while you were making changes.");
+                n.setPosition(Position.MIDDLE);
+                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            } catch (ValidationException validationException) {
+                Notification.show("Failed to update the data. Check again that all values are valid");
+            }
+        });
     }
 }

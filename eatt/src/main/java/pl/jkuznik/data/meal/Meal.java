@@ -1,32 +1,24 @@
 package pl.jkuznik.data.meal;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import pl.jkuznik.data.AbstractEntity;
 
 @Entity
+@Table(name="meal")
 public class Meal extends AbstractEntity {
 
-
-    @Id
+    /*@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id;*/
     private String name;
     private String description;
     private String allergens;
     private String nutritions;
     private String restaurantName;
 
-    public Long getId() {
-        return id;
-    }
+    public Meal(){
 
-    public void setId(Long id) {
-        this.id = id;
     }
-
     public String getName() {
         return name;
     }
