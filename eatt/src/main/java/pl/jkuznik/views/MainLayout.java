@@ -4,12 +4,7 @@ import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.contextmenu.MenuItem;
-import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Footer;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Header;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.Scroller;
@@ -20,12 +15,15 @@ import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Optional;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 import pl.jkuznik.data.user.User;
 import pl.jkuznik.security.AuthenticatedUser;
 import pl.jkuznik.views.easyaccesstotaste.EasyAccesstoTasteView;
-import pl.jkuznik.views.edit.EditView;
+import pl.jkuznik.views.edit.*;
 import pl.jkuznik.views.manage.ManageView;
 import pl.jkuznik.views.menu.MenuView;
 import pl.jkuznik.views.myorder.MyOrderView;
@@ -64,9 +62,24 @@ public class MainLayout extends AppLayout {
         appName.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
         Header header = new Header(appName);
 
+        Image image = new Image();
+        try {
+            String filePath = "src/main/resources/img1.png";
+
+            File file = new File(filePath);
+            FileInputStream fis = new FileInputStream(file);
+
+            StreamResource resource = new StreamResource("img1.png", () -> fis);
+
+            image = new Image(resource, "alt text");
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
         Scroller scroller = new Scroller(createNavigation());
 
-        addToDrawer(header, scroller, createFooter());
+        addToDrawer(header, image, scroller, createFooter());
     }
 
     private SideNav createNavigation() {

@@ -11,8 +11,8 @@ insert into sentence (version, text) values (1, 'Żona programisty- Idź do skle
 --DROP TABLE IF EXISTS restaurant
 --create table restaurant (version int, id BIGINT AUTO_INCREMENT primary key, name varchar(255), is_active boolean)
 insert into restaurant (version, name, is_active, is_enabled) values (1, '<Wszystko>', false, false)
-insert into restaurant (version, name, is_active, is_enabled) values (1, 'Pizzeria Lolo', true, true)
-insert into restaurant (version, name, is_active, is_enabled) values (1, 'Atmosfera', false, true)
+insert into restaurant (version, name, is_active, is_enabled) values (1, 'Pizzeria Lolo', false, true)
+insert into restaurant (version, name, is_active, is_enabled) values (1, 'Atmosfera', true, true)
 insert into restaurant (version, name, is_active, is_enabled) values (1, 'McD', false, true)
 --DROP TABLE IF EXISTS meal
 --create table meal (version int, id BIGINT AUTO_INCREMENT PRIMARY KEY, name varchar(255), description varchar(32766), allergens varchar(32766), nutritions varchar(32767), restaurant_name varchar(255))
@@ -20,6 +20,8 @@ insert into meal (version, name, is_meal_active, description, allergens, nutriti
 insert into meal (version, name, is_meal_active, description, allergens, nutritions, restaurant_name, is_restaurant_active) values (1, 'Diablo', true, 'Pikantna', 'Gluten, śladowe ilości orzeszków ziemnych, papryka', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 'Pizzeria Lolo', true)
 insert into meal (version, name, is_meal_active, description, allergens, nutritions, restaurant_name, is_restaurant_active) values (1, 'Margarita', true, 'Dla dzieci', 'Gluten, laktoza, papryka', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 'Pizzeria Lolo', true)
 insert into meal (version, name, is_meal_active, description, allergens, nutritions, restaurant_name, is_restaurant_active) values (1, 'Obiad', true, 'Dobry', 'Gluten, czosnek, papryka', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 'Atmosfera', true)
+insert into meal (version, name, is_meal_active, description, allergens, nutritions, restaurant_name, is_restaurant_active) values (1, 'Rolada z kluskami', true, 'Niedzielny obiad', 'Gluten, czosnek, papryka', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 'Atmosfera', true)
+insert into meal (version, name, is_meal_active, description, allergens, nutritions, restaurant_name, is_restaurant_active) values (1, 'Zestaw surówek', true, 'Buraczki, marchewka tarta, biała kapusta', 'Gluten, czosnek, papryka', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 'Atmosfera', true)
 insert into meal (version, name, is_meal_active, description, allergens, nutritions, restaurant_name, is_restaurant_active) values (1, 'Pstrąg', true, 'Zawsze świeża ryba', 'Cytryna', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 'Atmosfera', true)
 insert into meal (version, name, is_meal_active, description, allergens, nutritions, restaurant_name, is_restaurant_active) values (1, 'Frytki', true, 'Najdłuższe na rynku, solone', 'Gluten', 'Na 100 gram: Białko 0g, Tłuszcze 12g, Węglowodany 88g - 530kcal', 'McD', true)
 insert into meal (version, name, is_meal_active, description, allergens, nutritions, restaurant_name, is_restaurant_active) values (1, 'Hamburger', true, '100% (w)Ołowiu', 'Gluten, e234, e235, e236, e237,.., e15432', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 'McD', true)
