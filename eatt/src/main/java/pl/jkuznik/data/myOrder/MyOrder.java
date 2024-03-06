@@ -3,6 +3,8 @@ package pl.jkuznik.data.myOrder;
 import jakarta.persistence.*;
 import pl.jkuznik.data.AbstractEntity;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name ="my_order")
 public class MyOrder extends AbstractEntity {
@@ -10,6 +12,7 @@ public class MyOrder extends AbstractEntity {
     /*@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;*/
+    private LocalDate date;
     private String restaurantName;
     private String mealName;
     private String userName;
@@ -17,11 +20,19 @@ public class MyOrder extends AbstractEntity {
     private String notes;
     private String comment;
     private int rating;
-    private String email;
     private boolean isActive;
 
     public MyOrder() {
     }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
     public String getRestaurantName() {
         return restaurantName;
     }
@@ -76,14 +87,6 @@ public class MyOrder extends AbstractEntity {
 
     public void setRating(int rating) {
         this.rating = rating;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public boolean isActive() {

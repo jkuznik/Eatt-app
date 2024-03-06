@@ -12,6 +12,7 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
@@ -50,6 +51,7 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
     private Span description = new Span();
     private Span allergens= new Span();
     private Span nutritions= new Span();
+    private TextField notes = new TextField();
     private String restaurantName;
     public MenuView(AuthenticatedUser authenticatedUser, RestaurantService restaurantService, MealService mealService, MyOrderService myOrderService) {
         this.authenticatedUser = authenticatedUser;
@@ -57,6 +59,8 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
         this.mealService = mealService;
         this.myOrderService = myOrderService;
         Accordion accordion = new Accordion();
+        notes.setHelperText("Uwagi do zamówienia");
+        notes.setMinLength(500);
 
         if (getRestaurant() == null) restaurantName = "Nie wybrano restauracji. Zgłoś to w administracji";
         else restaurantName = getRestaurant().getName();
@@ -68,14 +72,15 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
         radioGroup.setItems(getMeals(getRestaurant()));
         radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
 
-        List<MyOrder> actualMyOrders = myOrderService.list();
+        List<MyOrder> myOrders = myOrderService.list();
         User loggedUser = getLoggedUser();
-        Optional<MyOrder> any = actualMyOrders.stream()
+        Optional<MyOrder> any = myOrders.stream()
                 .filter(myOrder -> myOrder.getUserName() == loggedUser.getName())
                 .filter(MyOrder::isActive)
                 .findAny();
         getContent().add(radioGroup);
         getContent().add(accordion);
+        getContent().add(notes);
         if (any.isEmpty()) {
             order.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             getContent().add(order);
@@ -90,7 +95,7 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
         orderClickListener(order);
         changeClickListener(change);
         absentClickListener(absent);
-    radioGroup.addValueChangeListener(event -> setAccordionSampleDataAndRefresh(accordion, radioGroup, order, change, absent, descriptionLayout, allergensLayout, nutritionsLayout));
+    radioGroup.addValueChangeListener(event -> setAccordionSampleDataAndRefresh(accordion, notes, radioGroup, order, change, absent, descriptionLayout, allergensLayout, nutritionsLayout));
     }
     private void setAccoriondSampleData(Accordion accordion, RadioButtonGroup radioGroup){
         if (getRestaurant() == null) description = new Span("Wybierz restaurację");
@@ -117,12 +122,13 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
         accordion.add("Wartości odżywcze", nutritionsLayout);
     }
 
-    private void setAccordionSampleDataAndRefresh(Accordion accordion, RadioButtonGroup radioGroup, Button button1, Button button2, Button button3, VerticalLayout verticalLayout1, VerticalLayout verticalLayout2, VerticalLayout verticalLayout3) {
+    private void setAccordionSampleDataAndRefresh(Accordion accordion, TextField notes, RadioButtonGroup radioGroup, Button button1, Button button2, Button button3, VerticalLayout verticalLayout1, VerticalLayout verticalLayout2, VerticalLayout verticalLayout3) {
         accordion.remove(verticalLayout1);
         accordion.remove(verticalLayout2);
         accordion.remove(verticalLayout3);
         getContent().remove(accordion);
         getContent().remove(radioGroup);
+        getContent().remove(notes);
 
         List<MyOrder> actualMyOrders = myOrderService.list();
         User loggedUser = getLoggedUser();
@@ -144,6 +150,7 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
 
         getContent().add(radioGroup);
         getContent().add(accordion);
+        getContent().add(notes);
         if (any.isEmpty()) {
             button1.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             getContent().add(button1);
@@ -179,7 +186,10 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
                 .orElse(meals.get(0));
     }
     private List<String> getMeals(Restaurant restaurant) {
-        List<Meal> meals = mealService.list();
+        List<Meal> meals = mealService.list()
+                .stream()
+                .filter(Meal::isMealActive)
+                .toList();
         List<String> mealsNames = new ArrayList<>();
         if (restaurant == null) return mealsNames;
 
@@ -206,7 +216,7 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
                     newOrder.setMealName(radioGroup.getValue().toString());
                     newOrder.setUserEmail(loggedUser.getEmail());
                     newOrder.setUserName(loggedUser.getName());
-                    newOrder.setNotes("Bez uwag");
+                    newOrder.setNotes(notes.getValue());
                     newOrder.setComment("Dodaj komentarz");
                     newOrder.setRating(0);
                     newOrder.setActive(true);
@@ -254,7 +264,9 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
                     MyOrder newOrder = new MyOrder();
                     newOrder.setRestaurantName(radioGroup.getLabel());
                     newOrder.setMealName(radioGroup.getValue().toString());
+                    newOrder.setUserEmail(loggedUser.getEmail());
                     newOrder.setUserName(loggedUser.getName());
+                    newOrder.setNotes(notes.getValue());
                     newOrder.setComment("Dodaj komentarz");
                     newOrder.setRating(0);
                     newOrder.setActive(true);

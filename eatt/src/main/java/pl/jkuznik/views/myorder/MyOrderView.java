@@ -1,22 +1,12 @@
 package pl.jkuznik.views.myorder;
 
-import pl.jkuznik.data.samplePerson.SamplePerson;
-import pl.jkuznik.data.meal.Meal;
-import pl.jkuznik.data.myOrder.MyOrder;
-import pl.jkuznik.data.restaurant.Restaurant;
-import pl.jkuznik.data.user.User;
-import pl.jkuznik.security.AuthenticatedUser;
-import pl.jkuznik.data.meal.MealService;
-import pl.jkuznik.data.myOrder.MyOrderService;
-import pl.jkuznik.data.restaurant.RestaurantService;
-import pl.jkuznik.data.samplePerson.SamplePersonService;
-import pl.jkuznik.views.MainLayout;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
@@ -28,12 +18,20 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import jakarta.annotation.security.PermitAll;
+import org.springframework.data.domain.PageRequest;
+import pl.jkuznik.data.meal.Meal;
+import pl.jkuznik.data.meal.MealService;
+import pl.jkuznik.data.myOrder.MyOrder;
+import pl.jkuznik.data.myOrder.MyOrderService;
+import pl.jkuznik.data.restaurant.Restaurant;
+import pl.jkuznik.data.restaurant.RestaurantService;
+import pl.jkuznik.data.user.User;
+import pl.jkuznik.security.AuthenticatedUser;
+import pl.jkuznik.views.MainLayout;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 
 
 @PageTitle("My Order")
@@ -45,35 +43,51 @@ public class MyOrderView extends Composite<VerticalLayout>  {
     private final MyOrderService myOrderService;
     private final MealService mealService;
     private final AuthenticatedUser authenticatedUser;
+    private HorizontalLayout layoutRow = new HorizontalLayout();
+    private VerticalLayout layoutColumn2 = new VerticalLayout();
+    private HorizontalLayout layoutRow2 = new HorizontalLayout();
+    private Grid<MyOrder> grid = new Grid(MyOrder.class, false);
+
+    private Select select = new Select();
 
     public MyOrderView(RestaurantService restaurantService, MyOrderService myOrderService, MealService mealService, AuthenticatedUser authenticatedUser) {
         this.restaurantService = restaurantService;
         this.myOrderService = myOrderService;
         this.mealService = mealService;
         this.authenticatedUser = authenticatedUser;
-
         User loggedUser = getLoggedUser();
         String currentMyOrder;
 
         H1 h1 = new H1();
+        //<theme-editor-local-classname>
+        h1.addClassName("my-order-view-h1-1");
         H2 h2 = new H2();
-        HorizontalLayout layoutRow = new HorizontalLayout();
-        Select select = new Select();
-        VerticalLayout layoutColumn2 = new VerticalLayout();
-        Button buttonSecondary = new Button();
-        HorizontalLayout layoutRow2 = new HorizontalLayout();
-        Grid basicGrid = new Grid(SamplePerson.class);
-        getContent().setWidth("100%");
-        getContent().getStyle().set("flex-grow", "1");
+        H3 h3 = new H3();
         if (getRestaurant() == null) h1.setText("Wybierz coś dla siebie");
         else h1.setText(getRestaurant().getName());
         h1.setWidth("max-content");
-
         if (getMyOrder(loggedUser) != null) currentMyOrder = getMyOrder(loggedUser).getMealName();
         else currentMyOrder = "Nie wybrano potrawy. Nie zastanawiaj się długo, kto się spóźni - ten nie je.";
-
         h2.setText(currentMyOrder);
         h2.setWidth("max-content");
+        h3.setText("Historia zamówień w realizacji");
+
+
+//        Button buttonSecondary = new Button();
+//        buttonSecondary.setText("Wybierz");
+//        buttonSecondary.setWidth("min-content");
+//
+//        select.setLabel("Historia zamówień");
+//        select.setWidth("min-content");
+//        setSelectSampleData(select);
+
+        grid.setWidth("80%");
+        grid.getStyle().set("flex-grow", "0");
+        setGridSampleData(grid);
+
+        getContent().setWidth("100%");
+        getContent().getStyle().set("flex-grow", "1");
+
         layoutRow.setWidthFull();
         getContent().setFlexGrow(1.0, layoutRow);
         layoutRow.addClassName(Gap.MEDIUM);
@@ -81,77 +95,70 @@ public class MyOrderView extends Composite<VerticalLayout>  {
         layoutRow.getStyle().set("flex-grow", "1");
         layoutRow.setAlignItems(Alignment.START);
         layoutRow.setJustifyContentMode(JustifyContentMode.START);
-        select.setLabel("Historia zamówień");
-        select.setWidth("min-content");
-        setSelectSampleData(select);
+
         layoutColumn2.setHeightFull();
         layoutRow.setFlexGrow(1.0, layoutColumn2);
         layoutColumn2.setWidth("80%");
         layoutColumn2.getStyle().set("flex-grow", "1");
         layoutColumn2.setJustifyContentMode(JustifyContentMode.CENTER);
         layoutColumn2.setAlignItems(Alignment.START);
-        buttonSecondary.setText("Wybierz");
-        buttonSecondary.setWidth("min-content");
         layoutRow2.setWidthFull();
         getContent().setFlexGrow(1.0, layoutRow2);
         layoutRow2.addClassName(Gap.MEDIUM);
         layoutRow2.setWidth("100%");
         layoutRow2.getStyle().set("flex-grow", "1");
-        basicGrid.setWidth("80%");
-        basicGrid.getStyle().set("flex-grow", "0");
-        setGridSampleData(basicGrid);
+
         getContent().add(h1);
         getContent().add(h2);
         getContent().add(layoutRow);
-        layoutRow.add(select);
-        layoutRow.add(layoutColumn2);
-        layoutColumn2.add(buttonSecondary);
-        getContent().add(layoutRow2);
-        layoutRow2.add(basicGrid);
-    }
+//        layoutRow.add(select);
+//        layoutRow.add(layoutColumn2);
+//        layoutColumn2.add(buttonSecondary);
+        getContent().add(h3, layoutRow2);
+        layoutRow2.add(grid);
 
-    record SampleItem(String value, String label, Boolean disabled) {
+        select.addValueChangeListener(e -> {
+//            grid.removeAllColumns();
+//            grid.addColumn("restaurantName").setAutoWidth(true).setHeader("Restauracja");
+//            grid.addColumn("mealName").setAutoWidth(true).setHeader("Danie");
+//            grid.addColumn("comment").setAutoWidth(true).setHeader("Komentarz");
+//            grid.addColumn("rating").setAutoWidth(true).setHeader("Ocena");
+//
+//            grid.setItems(query -> myOrderService.list(
+//                    PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
+//                            .stream()
+//                            .filter(myOrder -> myOrder.getRestaurantName().equals(select.getLabel())));
+//            refreshGrid();
+        });
     }
-
     private void setSelectSampleData(Select select) {
-        List<SampleItem> sampleItems = new ArrayList<>();
-        sampleItems.add(new SampleItem("first", "First", null));
-        sampleItems.add(new SampleItem("second", "Second", null));
-        sampleItems.add(new SampleItem("third", "Third", Boolean.TRUE));
-        sampleItems.add(new SampleItem("fourth", "Fourth", null));
-        select.setItems(sampleItems);
-        select.setItemLabelGenerator(item -> ((SampleItem) item).label());
-        select.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((SampleItem) item).disabled()));
-    }
+        List<Restaurant> restaurants = restaurantService.list();
 
+        select.setItems(restaurants);
+        select.setItemLabelGenerator(item -> ((Restaurant) item).getName());
+//        select.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((SampleItem) item).disabled()));
+    }
     private void setGridSampleData(Grid grid) {
-        grid.setItems(query -> samplePersonService.list(
-                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
-                .stream());
+        grid.addColumn("restaurantName").setAutoWidth(true).setHeader("Restauracja");
+        grid.addColumn("mealName").setAutoWidth(true).setHeader("Danie");
+        grid.addColumn("comment").setAutoWidth(true).setHeader("Komentarz");
+        grid.addColumn("rating").setAutoWidth(true).setHeader("Ocena");
+//
+//        grid.setItems(query -> myOrderService.list(
+//                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
+//                .stream()
+//                /*.filter(myOrder -> myOrder.getRestaurantName().equals(select.getLabel()))*/);
     }
-
+    private void refreshGrid() {
+        grid.select(null);
+        grid.getDataProvider().refreshAll();
+    }
     private Restaurant getRestaurant() { // NAPISAĆ TEST
         List<Restaurant> restaurants = restaurantService.list();
         Optional<Restaurant> restaurantOptional = restaurants.stream()
                 .filter(Restaurant::isActive)
                 .findFirst();
         return restaurantOptional.orElse(null);
-    }
-    private List<String> getMeals(Restaurant restaurant) {
-        List<Meal> meals = mealService.list();
-        List<String> mealsNames = new ArrayList<>();
-        if (restaurant == null) return mealsNames;
-
-        List<Meal> mealList = meals.stream()
-                .filter(d -> d.getRestaurantName() == restaurant.getName())
-                .toList();
-        for (Meal d : mealList) {
-            mealsNames.add(d.getName());
-        }
-        return mealsNames;
-    }
-    private List<MyOrder> getActualMyOrders(){
-        return myOrderService.list();
     }
     private MyOrder getMyOrder(User user) {
         List<MyOrder> myOrders = myOrderService.list();
@@ -165,6 +172,4 @@ public class MyOrderView extends Composite<VerticalLayout>  {
         return loggedUser.get();
     }
 
-    @Autowired()
-    private SamplePersonService samplePersonService;
 }

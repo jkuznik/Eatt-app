@@ -309,6 +309,7 @@ public class EditView extends Div implements BeforeEnterObserver {
                 List<Restaurant> restaurants = restaurantService.list();
                 Optional<Restaurant> anyRestaurant = restaurants.stream()
                         .filter(r -> r.getName().equals(this.meal.getRestaurantName()))
+                        .filter(r -> !r.getName().equals("<Wszystko>"))
                         .findAny();
 
                 if ( anyRestaurant.isEmpty() ){

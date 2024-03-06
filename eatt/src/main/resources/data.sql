@@ -10,6 +10,7 @@ insert into sentence (version, text) values (1, 'Miłego dnia :)')
 insert into sentence (version, text) values (1, 'Żona programisty- Idź do sklepu i kup chleb, a jak będą jajka to weź 10. W sklepie. - Są jajka? - Tak. - To poproszę 10 chlebów.')
 --DROP TABLE IF EXISTS restaurant
 --create table restaurant (version int, id BIGINT AUTO_INCREMENT primary key, name varchar(255), is_active boolean)
+insert into restaurant (version, name, is_active, is_enabled) values (1, '<Wszystko>', false, false)
 insert into restaurant (version, name, is_active, is_enabled) values (1, 'Pizzeria Lolo', true, true)
 insert into restaurant (version, name, is_active, is_enabled) values (1, 'Atmosfera', false, true)
 insert into restaurant (version, name, is_active, is_enabled) values (1, 'McD', false, true)
@@ -19,14 +20,12 @@ insert into meal (version, name, is_meal_active, description, allergens, nutriti
 insert into meal (version, name, is_meal_active, description, allergens, nutritions, restaurant_name, is_restaurant_active) values (1, 'Diablo', true, 'Pikantna', 'Gluten, śladowe ilości orzeszków ziemnych, papryka', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 'Pizzeria Lolo', true)
 insert into meal (version, name, is_meal_active, description, allergens, nutritions, restaurant_name, is_restaurant_active) values (1, 'Margarita', true, 'Dla dzieci', 'Gluten, laktoza, papryka', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 'Pizzeria Lolo', true)
 insert into meal (version, name, is_meal_active, description, allergens, nutritions, restaurant_name, is_restaurant_active) values (1, 'Obiad', true, 'Dobry', 'Gluten, czosnek, papryka', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 'Atmosfera', true)
-insert into meal (version, name, is_meal_active, description, allergens, nutritions, restaurant_name, is_restaurant_active) values (1, 'Pstrąg', true, 'Świeża', 'Cytryna', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 'Atmosfera', true)
+insert into meal (version, name, is_meal_active, description, allergens, nutritions, restaurant_name, is_restaurant_active) values (1, 'Pstrąg', true, 'Zawsze świeża ryba', 'Cytryna', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 'Atmosfera', true)
 insert into meal (version, name, is_meal_active, description, allergens, nutritions, restaurant_name, is_restaurant_active) values (1, 'Frytki', true, 'Najdłuższe na rynku, solone', 'Gluten', 'Na 100 gram: Białko 0g, Tłuszcze 12g, Węglowodany 88g - 530kcal', 'McD', true)
 insert into meal (version, name, is_meal_active, description, allergens, nutritions, restaurant_name, is_restaurant_active) values (1, 'Hamburger', true, '100% (w)Ołowiu', 'Gluten, e234, e235, e236, e237,.., e15432', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 'McD', true)
 --DROP TABLE IF EXISTS my_order
 --create table my_order (version int, id BIGINT AUTO_INCREMENT PRIMARY KEY, restaurant_name varchar(255), meal_name varchar(255), user_name varchar(255), notes varchar(32766), comment varchar(32766), rating int, email varchar(255), is_active boolean)
-insert into my_order (version, restaurant_name, meal_name, user_name, notes, comment, rating, email, is_active) values (1, 'Atmosfera', 'Obiad', 'Jan Kowalski', 'Bez uwag', 'Dodaj komentarz', 0, 'adres@adres.com', false)
---DROP TABLE IF EXISTS sample_person
---create table sample_person (version int, id BIGINT AUTO_INCREMENT PRIMARY KEY, user_name varchar(255), user_email varchar(255), mo_restaurant_name varchar(255), mo_meal_name varchar(255), mo_comment varchar(32766), mo_rating int, me_description varchar(32766), me_allergens varchar(32766), me_nutritions varchar(32767), order_date date)
+insert into my_order (version, restaurant_name, meal_name, user_name, notes, comment, rating, is_active) values (1, 'Atmosfera', 'Obiad', 'Jan Kowalski', 'Bez uwag', 'Dodaj komentarz', 0, false)
 
 
 
@@ -113,7 +112,6 @@ insert into my_order (version, restaurant_name, meal_name, user_name, notes, com
 
 
 
-insert into sample_person (mo_restaurant_name, mo_meal_name, me_description, me_allergens, me_nutritions, version, user_name, user_email, mo_comment, mo_rating, order_date) values ('Atmosfera', 'Hamburger', '100% (w)Ołowiu', 'Gluten, e234, e235, e236, e237,.., e15432', 'Na 100 gram: Białko 16g, Tłuszcze 34g, Węglowodany 50g - 530kcal', 1, ' ', ' ', ' ', 6, '1000-01-01')
 
 
 

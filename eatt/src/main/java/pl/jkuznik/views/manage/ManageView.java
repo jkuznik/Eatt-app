@@ -18,7 +18,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
@@ -27,6 +26,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import pl.jkuznik.data.information.Information;
 import pl.jkuznik.data.information.InformationService;
+import pl.jkuznik.data.meal.Meal;
+import pl.jkuznik.data.meal.MealService;
 import pl.jkuznik.data.myOrder.MyOrder;
 import pl.jkuznik.data.myOrder.MyOrderService;
 import pl.jkuznik.data.restaurant.Restaurant;
@@ -45,6 +46,7 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
     private final RestaurantService restaurantService;
     private final InformationService informationService;
     private final MyOrderService myOrderService;
+    private final MealService mealService;
     private final Grid<MyOrder> grid = new Grid<>(MyOrder.class, false);
     private final CollaborationBinder<MyOrder> binder;
     private final Button choseButton = new Button("Wybierz");
@@ -54,24 +56,27 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
     private final Button add = new Button("Dodaj");
     private final TextField userName =  new TextField("Pracownik");
     private final TextField mealName = new TextField("Danie");
+    private final TextField notes = new TextField("Uwagi");
+    private final TextField email = new TextField("Kontakt");
     private TextField infoTextField = new TextField();
     private TextField newRestaurant = new TextField();
     private Select select = new Select();
     private String restaurantName;
-    private MyOrder myOrder;
     private SplitLayout splitLayout = new SplitLayout();
     private Div editorLayoutDiv = new Div();
     private FormLayout formLayout = new FormLayout();
     private Div editorDiv = new Div();
     private Div wrapper = new Div();
     private HorizontalLayout buttonLayout = new HorizontalLayout();
-
-    record SampleItem(String value, String label, Boolean disabled) {
-    }
-    public ManageView(RestaurantService restaurantService, InformationService informationService, MyOrderService myOrdeService) {
+    public ManageView(RestaurantService restaurantService, InformationService informationService, MyOrderService myOrdeService, MealService mealService) {
         this.restaurantService = restaurantService;
         this.informationService = informationService;
         this.myOrderService = myOrdeService;
+        this.mealService = mealService;
+        FormLayout formLayout2Col = new FormLayout();
+        formLayout2Col.getStyle().set("flex-grow", "1");
+        formLayout2Col.setWidth("30%");
+
         UserInfo userInfo = new UserInfo(UUID.randomUUID().toString(), "Steve Lange");
         binder = new CollaborationBinder<>(MyOrder.class, userInfo);
 
@@ -82,6 +87,7 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
         grid.addColumn("userName").setAutoWidth(true).setHeader("Pracownik");
         grid.addColumn("mealName").setAutoWidth(true).setHeader("Danie");
         grid.addColumn("userEmail").setAutoWidth(true).setHeader("Kontakt");
+        grid.addColumn("notes").setAutoWidth(true).setHeader("Uwagi");
 
         grid.setItems(query -> myOrdeService.list(
                         PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
@@ -98,9 +104,6 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
             }
         });
 
-        FormLayout formLayout2Col = new FormLayout();
-        formLayout2Col.getStyle().set("flex-grow", "1");
-        formLayout2Col.setWidth("30%");
         select.setLabel("Wybierz restauracje do kolejnego zamówienia");
         select.setWidth("min-content");
         select.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
@@ -115,6 +118,7 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
                 .filter(Information::isActive)
                 .findFirst()
                 .orElseGet(supplier);
+
         String info;
 
         if (information.getText().isEmpty()) info ="";
@@ -151,18 +155,20 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
         wrapper.setClassName("grid-wrapper");
 
         editorLayoutDiv.add(editorDiv);
-        formLayout.add(userName, mealName);
+        formLayout.add(userName, email, mealName, notes);
         editorDiv.add(formLayout);
         createButtonLayout(editorLayoutDiv);
         splitLayout.addToPrimary(wrapper, editorLayoutDiv);
         wrapper.add(grid);
     }
     private void refreshTextField(MyOrder myOrder) {
-        formLayout.remove(userName, mealName);
+        formLayout.remove(userName, email, mealName, notes);
         editorDiv.remove(formLayout);
         userName.setValue(myOrder.getUserName());
         mealName.setValue(myOrder.getMealName());
-        formLayout.add(userName, mealName);
+        if (!myOrder.getNotes().isEmpty()) notes.setValue(myOrder.getNotes());
+        email.setValue(myOrder.getUserEmail());
+        formLayout.add(userName, email, mealName, notes);
         editorDiv.add(formLayout);
     }
     private void refreshGrid() {
@@ -177,7 +183,9 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
         editorLayoutDiv.add(buttonLayout);
     }
     private void setSelectSampleData() {   // NAPISAĆ TEST
-        List<Restaurant> restaurants = restaurantService.list();
+        List<Restaurant> restaurants =  restaurantService.list().stream()
+                        .filter(restaurant -> !restaurant.getName().equals("<Wszystko>"))
+                                .toList();
         select.setItems(restaurants);
         select.setItemLabelGenerator(restaurant -> ((Restaurant) restaurant).getName());
         select.setItemEnabledProvider(item -> Boolean.TRUE.equals(((Restaurant) item).isEnabled()));
@@ -262,6 +270,10 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
             for (MyOrder myOrder : myOrders){
                 if (myOrder.isActive()) myOrder.setActive(false);
             }
+            List<Restaurant> restaurants = restaurantService.list();
+            for (Restaurant restaurant : restaurants){
+                if (restaurant.isActive()) restaurant.setActive(false);
+            }
 
             myOrderService.updateAll(myOrders);
             refreshGrid();
@@ -271,25 +283,13 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
     }
     private void clickEditListener(Button button) {
         button.addClickListener( e -> {
-            try {
-                if (this.myOrder == null) {
-                    this.myOrder = new MyOrder();
-                }
-                binder.writeBean(this.myOrder);
-            } catch (ObjectOptimisticLockingFailureException exception) {
-                Notification n = Notification.show(
-                        "Error updating the data. Somebody else has updated the record while you were making changes.");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
-            } catch (ValidationException validationException) {
-                Notification.show("Failed to update the data. Check again that all values are valid");
-            }
-
+            if (mealName.getValue().isEmpty()) return;
             List<MyOrder> myOrders = myOrderService.list();
 
             for (MyOrder myOrder : myOrders){
-                if ((myOrder.getUserName().equals(this.myOrder.getUserName()) && myOrder.isActive())) {
+                if ((myOrder.getUserName().equals(userName.getValue()) && myOrder.isActive())) {
                     myOrder.setMealName(mealName.getValue());
+                    myOrder.setNotes(notes.getValue());
                 }
             }
 
@@ -298,8 +298,36 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
             Notification.show("Zmieniono").setPosition(Notification.Position.BOTTOM_END);
             UI.getCurrent().navigate(ManageView.class);
         });
+
     }
     public void clickAddListener(Button button){
-        
+        button.addClickListener( e -> {
+            List<String> restaurantNames = restaurantService.list().stream()
+                    .map(Restaurant::getName)
+                    .toList();
+
+            if (restaurantNames.contains(newRestaurant.getValue())) {
+                Notification n = Notification.show("Istnieje już taka restauracja w bazie danych");
+                n.setPosition(Notification.Position.MIDDLE);
+                return;
+            }
+
+            Restaurant restaurant = new Restaurant();
+
+            restaurant.setName(newRestaurant.getValue());
+            restaurant.setEnabled(true);
+            restaurant.setActive(false);
+
+            restaurantService.update(restaurant);
+
+            Meal newMeal = new Meal();
+            newMeal.setRestaurantActive(true);
+            newMeal.setRestaurantName(newRestaurant.getValue());
+            newMeal.setMealActive(false);
+            mealService.update(newMeal);
+
+            Notification n = Notification.show("Dodano nową restaurację");
+            n.setPosition(Notification.Position.MIDDLE);
+        });
     }
 }
