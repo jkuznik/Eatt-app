@@ -13,6 +13,7 @@ public class Restaurant extends AbstractEntity {
 
     private String name;
     private boolean isActive;
+    private boolean isEnabled;
 
     public String getName() {
         return name;
@@ -28,5 +29,13 @@ public class Restaurant extends AbstractEntity {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
     }
 }

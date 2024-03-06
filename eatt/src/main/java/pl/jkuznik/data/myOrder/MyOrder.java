@@ -13,6 +13,7 @@ public class MyOrder extends AbstractEntity {
     private String restaurantName;
     private String mealName;
     private String userName;
+    private String userEmail;
     private String notes;
     private String comment;
     private int rating;
@@ -43,6 +44,14 @@ public class MyOrder extends AbstractEntity {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 
     public String getNotes() {

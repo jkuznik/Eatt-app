@@ -99,7 +99,8 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
         descriptionLayout.setSpacing(true);
         descriptionLayout.setPadding(true);
         descriptionLayout.add(description);
-        accordion.add("Opis potrawy - " + getMeal(getRestaurant(), radioGroup).getName(), descriptionLayout);
+        if (getRestaurant() == null)  accordion.add("Opis potrawy - ", descriptionLayout);
+        else accordion.add("Opis potrawy - " + getMeal(getRestaurant(), radioGroup).getName(), descriptionLayout);
         if (getRestaurant() == null) allergens = new Span("Wybierz restaurację");
         else allergens = new Span(getMeal(getRestaurant(), radioGroup).getAllergens());
         allergensLayout = new VerticalLayout();     // MOŻE GENEROWAĆ PROBLEMY
@@ -203,6 +204,7 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
                     MyOrder newOrder = new MyOrder();
                     newOrder.setRestaurantName(radioGroup.getLabel());
                     newOrder.setMealName(radioGroup.getValue().toString());
+                    newOrder.setUserEmail(loggedUser.getEmail());
                     newOrder.setUserName(loggedUser.getName());
                     newOrder.setNotes("Bez uwag");
                     newOrder.setComment("Dodaj komentarz");

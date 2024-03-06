@@ -11,10 +11,12 @@ public class Meal extends AbstractEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;*/
     private String name;
+    private boolean isMealActive;
     private String description;
     private String allergens;
     private String nutritions;
     private String restaurantName;
+    private boolean isRestaurantActive;
 
     public Meal(){
 
@@ -25,6 +27,14 @@ public class Meal extends AbstractEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isMealActive() {
+        return isMealActive;
+    }
+
+    public void setMealActive(boolean mealActive) {
+        isMealActive = mealActive;
     }
 
     public String getDescription() {
@@ -57,5 +67,13 @@ public class Meal extends AbstractEntity {
 
     public void setRestaurantName(String restaurantName) {
         this.restaurantName = restaurantName;
+    }
+
+    public boolean isRestaurantActive() {
+        return isRestaurantActive;
+    }
+
+    public void setRestaurantActive(boolean restaurantActive) {
+        isRestaurantActive = restaurantActive;
     }
 }

@@ -6,6 +6,7 @@ import com.vaadin.collaborationengine.UserInfo;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -19,6 +20,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -57,7 +59,9 @@ public class EditView extends Div implements BeforeEnterObserver {
     private final RestaurantService restaurantService;
     CollaborationAvatarGroup avatarGroup;
     private TextField restaurantName;
+    private Checkbox isRestaurantActive;
     private TextField name;
+    private Checkbox isMealActive;
     private TextField description;
     private TextField allergens;
     private TextField nutritions;
@@ -68,6 +72,8 @@ public class EditView extends Div implements BeforeEnterObserver {
     private Meal meal;
     private String currentRestaurantName;
     private String currentMealName;
+    private LitRenderer<Meal> restaurantLit;
+    private LitRenderer<Meal> mealLit;
 
     public EditView(MealService mealService, RestaurantService restaurantService) {
         this.mealService = mealService;
@@ -89,10 +95,24 @@ public class EditView extends Div implements BeforeEnterObserver {
         createEditorLayout(splitLayout);
 
         add(splitLayout);
+        restaurantLit = LitRenderer.<Meal>of(
+                        "<vaadin-icon icon='vaadin:${item.icon}' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: ${item.color};'></vaadin-icon>")
+                .withProperty("icon", m -> m.isRestaurantActive() ? "check" : "minus").withProperty("color",
+                        m -> m.isRestaurantActive()
+                                ? "var(--lumo-primary-text-color)"
+                                : "var(--lumo-disabled-text-color)");
+        mealLit = LitRenderer.<Meal>of(
+                        "<vaadin-icon icon='vaadin:${item.icon}' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: ${item.color};'></vaadin-icon>")
+                .withProperty("icon", m -> m.isMealActive() ? "check" : "minus").withProperty("color",
+                        m -> m.isMealActive()
+                                ? "var(--lumo-primary-text-color)"
+                                : "var(--lumo-disabled-text-color)");
 
         // Configure Grid
         grid.addColumn("restaurantName").setAutoWidth(true).setHeader("Restauracja");
+        grid.addColumn(restaurantLit).setHeader(" ").setAutoWidth(true);
         grid.addColumn("name").setAutoWidth(true).setHeader("Danie");
+        grid.addColumn(mealLit).setHeader(" ").setAutoWidth(true);
         grid.addColumn("description").setAutoWidth(true).setHeader("Opis");
         grid.addColumn("allergens").setAutoWidth(true).setHeader("Alergeny");
         grid.addColumn("nutritions").setAutoWidth(true).setHeader("Wartości");
@@ -152,28 +172,34 @@ public class EditView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(editorDiv);
 
         restaurantName = new TextField("Restauracja");
+        isRestaurantActive = new Checkbox("Zablokuj/odbloku restauracje");
         name = new TextField("Danie");
+        isMealActive = new Checkbox("Zablokuj/odblokuj danie");
+        //<theme-editor-local-classname>
+        isMealActive.addClassName("edit-view-checkbox-1");
         description = new TextField("Opis");
         allergens = new TextField("Alergeny");
         nutritions = new TextField("Wartości");
-        formLayout.add(restaurantName, name, description, allergens, nutritions);
+        formLayout.add(restaurantName, isRestaurantActive, name, isMealActive, description, allergens, nutritions);
 
-        editorDiv.add(avatarGroup, formLayout);
+        editorDiv.add(formLayout);
         createButtonLayout(editorLayoutDiv);
 
         splitLayout.addToSecondary(editorLayoutDiv);
     }
     private void refreshTextField(Meal meal) {
-        formLayout.remove(restaurantName, name, description, allergens, nutritions);
+        formLayout.remove(restaurantName, isRestaurantActive, name, isMealActive, description, allergens, nutritions);
         editorDiv.remove(formLayout);
         restaurantName.setValue(meal.getRestaurantName());
+        isRestaurantActive.setValue(meal.isRestaurantActive());
         currentRestaurantName = meal.getRestaurantName();
         name.setValue(meal.getName());
+        isMealActive.setValue(meal.isMealActive());
         currentMealName = meal.getName();
         description.setValue(meal.getDescription());
         allergens.setValue(meal.getAllergens());
         nutritions.setValue(meal.getNutritions());
-        formLayout.add(restaurantName, name, description, allergens, nutritions);
+        formLayout.add(restaurantName, isRestaurantActive, name, isMealActive, description, allergens, nutritions);
         editorDiv.add(formLayout);
     }
     private void createButtonLayout(Div editorLayoutDiv) {
@@ -225,12 +251,14 @@ public class EditView extends Div implements BeforeEnterObserver {
 
                     if (meal.getName().equals(currentMealName)) {
                         meal.setName(this.meal.getName());
+                        meal.setMealActive(isMealActive.getValue());
                         meal.setDescription(this.meal.getDescription());
                         meal.setAllergens(this.meal.getAllergens());
                         meal.setNutritions(this.meal.getNutritions());
                     }
                     if (meal.getRestaurantName().equals(currentRestaurantName)) {
                         meal.setRestaurantName(this.meal.getRestaurantName());
+                        meal.setRestaurantActive(isRestaurantActive.getValue());
                     }
                     mealService.update(meal);
                 }
@@ -239,9 +267,12 @@ public class EditView extends Div implements BeforeEnterObserver {
                         .filter(rest -> rest.getName().equals(currentRestaurantName))
                         .toList();
 
-                restaurants1.forEach(r -> r.setName(this.meal.getRestaurantName()));
+                restaurants1.forEach(r -> {
+                    r.setName(this.meal.getRestaurantName());
+                    r.setEnabled(isRestaurantActive.getValue());
+                    if (!isRestaurantActive.getValue()) r.setActive(false);
+                });
                 restaurantService.updateAll(restaurants1);
-
 
                 currentRestaurantName = "";
                 currentMealName = "";
@@ -304,7 +335,9 @@ public class EditView extends Div implements BeforeEnterObserver {
 
                 Meal newMeal = new Meal();
                 newMeal.setRestaurantName(this.meal.getRestaurantName());
+                newMeal.setRestaurantActive(true);
                 newMeal.setName(this.meal.getName());
+                newMeal.setMealActive(true);
                 newMeal.setDescription(this.meal.getDescription());
                 newMeal.setAllergens(this.meal.getAllergens());
                 newMeal.setNutritions(this.meal.getNutritions());

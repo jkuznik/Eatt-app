@@ -65,7 +65,8 @@ public class MyOrderView extends Composite<VerticalLayout>  {
         Grid basicGrid = new Grid(SamplePerson.class);
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");
-        h1.setText(getRestaurant().getName());
+        if (getRestaurant() == null) h1.setText("Wybierz coś dla siebie");
+        else h1.setText(getRestaurant().getName());
         h1.setWidth("max-content");
 
         if (getMyOrder(loggedUser) != null) currentMyOrder = getMyOrder(loggedUser).getMealName();

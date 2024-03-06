@@ -26,17 +26,16 @@ import jakarta.annotation.security.RolesAllowed;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import pl.jkuznik.data.information.Information;
-import pl.jkuznik.data.myOrder.MyOrder;
-import pl.jkuznik.data.restaurant.Restaurant;
 import pl.jkuznik.data.information.InformationService;
+import pl.jkuznik.data.myOrder.MyOrder;
 import pl.jkuznik.data.myOrder.MyOrderService;
+import pl.jkuznik.data.restaurant.Restaurant;
 import pl.jkuznik.data.restaurant.RestaurantService;
 import pl.jkuznik.views.MainLayout;
-import pl.jkuznik.views.edit.EditView;
 
-import java.util.EventListener;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 @PageTitle("Manage")
 @Route(value = "manage", layout = MainLayout.class)
@@ -52,9 +51,11 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
     private final Button setButton = new Button("Ustaw");
     private final Button order = new Button("Wyślij zamówienie");
     private final Button edit = new Button("Edytuj");
+    private final Button add = new Button("Dodaj");
     private final TextField userName =  new TextField("Pracownik");
     private final TextField mealName = new TextField("Danie");
     private TextField infoTextField = new TextField();
+    private TextField newRestaurant = new TextField();
     private Select select = new Select();
     private String restaurantName;
     private MyOrder myOrder;
@@ -80,7 +81,7 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
 
         grid.addColumn("userName").setAutoWidth(true).setHeader("Pracownik");
         grid.addColumn("mealName").setAutoWidth(true).setHeader("Danie");
-        grid.addColumn("email").setAutoWidth(true).setHeader("Kontakt");
+        grid.addColumn("userEmail").setAutoWidth(true).setHeader("Kontakt");
 
         grid.setItems(query -> myOrdeService.list(
                         PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
@@ -105,16 +106,34 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
         select.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
         setSelectSampleData();
 
+        Information emptyInfo = new Information();
+        Supplier<Information> supplier = () -> emptyInfo;
+        emptyInfo.setActive(false);
+        emptyInfo.setText("");
+        List<Information> informations = informationService.list();
+        Information information = informations.stream()
+                .filter(Information::isActive)
+                .findFirst()
+                .orElseGet(supplier);
+        String info;
+
+        if (information.getText().isEmpty()) info ="";
+        else info = information.getText();
+
         infoTextField.setLabel("Ustaw informację dnia");
         infoTextField.setHelperText("Brak informacji - ustaw to pole puste");
-        infoTextField.setValue("");
+        infoTextField.setValue(info);
         infoTextField.setClearButtonVisible(true);
         infoTextField.setPrefixComponent(VaadinIcon.MAP_MARKER.create());
+        newRestaurant.setLabel("Dodaj nową restaurację do bazy danych");
+        newRestaurant.setValue("");
 
         formLayout2Col.add(select);
         formLayout2Col.add(choseButton);
         formLayout2Col.add(infoTextField);
         formLayout2Col.add(setButton);
+        formLayout2Col.add(newRestaurant);
+        formLayout2Col.add(add);
         createGridAndEditorLayout(splitLayout);
         splitLayout.addToSecondary(formLayout2Col);
         add(splitLayout);
@@ -123,6 +142,7 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
         clickSetListener(setButton);
         clickOrderListener(order);
         clickEditListener(edit);
+        clickAddListener(add);
     }
 
     private void createGridAndEditorLayout(SplitLayout splitLayout) {
@@ -160,7 +180,7 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
         List<Restaurant> restaurants = restaurantService.list();
         select.setItems(restaurants);
         select.setItemLabelGenerator(restaurant -> ((Restaurant) restaurant).getName());
-//        select.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((SampleItem) item).disabled())); // TUTAJ DOPISAĆ KOD JEŚLI UŻYTOWNIK NIE KORZYSTAŁ Z RESTAURACJI TO NIE MOŻE JEJ WYBRAĆ
+        select.setItemEnabledProvider(item -> Boolean.TRUE.equals(((Restaurant) item).isEnabled()));
     }
     private void clickChoseListener(Button button) { // NAPISAĆ TEST
         button.addClickListener(e -> {
@@ -278,5 +298,8 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
             Notification.show("Zmieniono").setPosition(Notification.Position.BOTTOM_END);
             UI.getCurrent().navigate(ManageView.class);
         });
+    }
+    public void clickAddListener(Button button){
+        
     }
 }

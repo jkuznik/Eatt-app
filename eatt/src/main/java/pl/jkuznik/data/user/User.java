@@ -20,6 +20,7 @@ public class User extends AbstractEntity {
 
     private String username;
     private String name;
+    private String email;
     @JsonIgnore
     private String hashedPassword;
     @Enumerated(EnumType.STRING)
@@ -40,6 +41,12 @@ public class User extends AbstractEntity {
     }
     public void setName(String name) {
         this.name = name;
+    }
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
     }
     public String getHashedPassword() {
         return hashedPassword;
