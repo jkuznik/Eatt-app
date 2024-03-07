@@ -13,13 +13,13 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.data.domain.PageRequest;
-import pl.jkuznik.data.meal.Meal;
 import pl.jkuznik.data.meal.MealService;
 import pl.jkuznik.data.myOrder.MyOrder;
 import pl.jkuznik.data.myOrder.MyOrderService;
@@ -29,7 +29,6 @@ import pl.jkuznik.data.user.User;
 import pl.jkuznik.security.AuthenticatedUser;
 import pl.jkuznik.views.MainLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,6 +45,9 @@ public class MyOrderView extends Composite<VerticalLayout>  {
     private HorizontalLayout layoutRow = new HorizontalLayout();
     private VerticalLayout layoutColumn2 = new VerticalLayout();
     private HorizontalLayout layoutRow2 = new HorizontalLayout();
+    private HorizontalLayout horizontalLayout = new HorizontalLayout();
+    private TextField comment = new TextField();
+    private Button addComment = new Button("Dodaj");
     private Grid<MyOrder> grid = new Grid(MyOrder.class, false);
 
     private Select select = new Select();
@@ -70,20 +72,20 @@ public class MyOrderView extends Composite<VerticalLayout>  {
         else currentMyOrder = "Nie wybrano potrawy. Nie zastanawiaj się długo, kto się spóźni - ten nie je.";
         h2.setText(currentMyOrder);
         h2.setWidth("max-content");
-        h3.setText("Historia zamówień w realizacji");
+        h3.setText("Historia zrealizowanych zamówień");
 
 
 //        Button buttonSecondary = new Button();
 //        buttonSecondary.setText("Wybierz");
 //        buttonSecondary.setWidth("min-content");
 //
-//        select.setLabel("Historia zamówień");
-//        select.setWidth("min-content");
-//        setSelectSampleData(select);
+        select.setLabel("Historia zamówień");
+        select.setWidth("min-content");
+        setSelectSampleData(select);
 
         grid.setWidth("80%");
         grid.getStyle().set("flex-grow", "0");
-        setGridSampleData(grid);
+        setGridSampleData(grid, loggedUser);
 
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");
@@ -115,7 +117,9 @@ public class MyOrderView extends Composite<VerticalLayout>  {
 //        layoutRow.add(layoutColumn2);
 //        layoutColumn2.add(buttonSecondary);
         getContent().add(h3, layoutRow2);
-        layoutRow2.add(grid);
+        comment.setHelperText("Dodaj komentarz");
+//        horizontalLayout.add(comment, addComment);
+        layoutRow2.add(grid, comment, addComment);
 
         select.addValueChangeListener(e -> {
 //            grid.removeAllColumns();
@@ -138,16 +142,18 @@ public class MyOrderView extends Composite<VerticalLayout>  {
         select.setItemLabelGenerator(item -> ((Restaurant) item).getName());
 //        select.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((SampleItem) item).disabled()));
     }
-    private void setGridSampleData(Grid grid) {
+    private void setGridSampleData(Grid grid, User loggedUser) {
         grid.addColumn("restaurantName").setAutoWidth(true).setHeader("Restauracja");
         grid.addColumn("mealName").setAutoWidth(true).setHeader("Danie");
         grid.addColumn("comment").setAutoWidth(true).setHeader("Komentarz");
-        grid.addColumn("rating").setAutoWidth(true).setHeader("Ocena");
-//
-//        grid.setItems(query -> myOrderService.list(
-//                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
-//                .stream()
-//                /*.filter(myOrder -> myOrder.getRestaurantName().equals(select.getLabel()))*/);
+//        grid.addColumn("rating").setAutoWidth(true).setHeader("Ocena");
+
+        grid.setItems(query -> myOrderService.list(
+                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
+                .stream()
+                        .filter( order -> order.getUserName().equals(loggedUser.getName()))
+                        .filter( order -> !order.isActive())
+                /*.filter(myOrder -> myOrder.getRestaurantName().equals(select.getLabel()))*/);
     }
     private void refreshGrid() {
         grid.select(null);

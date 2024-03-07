@@ -57,7 +57,7 @@ public class EditView extends Div implements BeforeEnterObserver {
     private final CollaborationBinder<Meal> binder;
     private final MealService mealService;
     private final RestaurantService restaurantService;
-    CollaborationAvatarGroup avatarGroup;
+    private CollaborationAvatarGroup avatarGroup;
     private TextField restaurantName;
     private Checkbox isRestaurantActive;
     private TextField name;
