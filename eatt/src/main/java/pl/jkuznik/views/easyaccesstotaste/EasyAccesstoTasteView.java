@@ -1,8 +1,10 @@
 package pl.jkuznik.views.easyaccesstotaste;
 
 import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
@@ -37,10 +39,38 @@ public class EasyAccesstoTasteView extends Composite<VerticalLayout> {
         this.sentencesService = sentencesService;
         this.informationService = informationService;
 
+        String textBlock = """
+                <div>
+                    Eatt jest to projekt zainspirowany aplikacją "Lunch in Order" firmy <a href='https://www.fireup.pro'>fireup.pro</a>
+                       <br><br>
+                       Obecna wersja, z dnia 07.03, jest w pełni funkcyjna jednak poza zasięgiem wzroku użytkownika pozostało jeszcze wiele pracy do zrobienia.
+                       
+                       Z racji, że w tym projekcie pierwszy raz korzystałem z technologii Vaadin oraz pierwszy raz tworzyłem front-end aplikacji
+                       całość wymaga code review. W początkowej fazie pracy kluczowym był właściwy efekt działania, a wszystkie kwestie
+                       frontendowe były rozwiązywane każdym możliwym sposobem.
+                       
+                       W razie zainteresowania aplikacją proszę się czuć swobodnie do wykorzystania jej w wszelki sposób, a
+                       dla mnie prawdziwą przyjemnością była by możliwość opowiedzenia wszystkiego na jej temat osobiście.                   
+                       <br><br>
+                       Aplikacja Eatt operuje w oparciu o bazę danych H2. W obecnej konfiguracji każde ponowne uruchomienie 
+                       programu resetuje stan bazy danych do zawartości data.sql. Dostęp do konsoli H2 na endpoincie 
+                       /h2-console   hasło: password  
+                </div>
+                """;
+        Html html = new Html(textBlock);
+
+
         HorizontalLayout layoutRow = new HorizontalLayout();
         Paragraph textLarge = new Paragraph();
         Hr hr = new Hr();
-        Anchor link = new Anchor();
+        H3 h3 = new H3();
+        h3.setText(textBlock);
+        Anchor github = new Anchor();
+        github.setText("https://github.com/jkuznik/jkuznik");
+        github.setHref("https://github.com/jkuznik/jkuznik");
+        Anchor fireup = new Anchor();
+        fireup.setTarget("FireUp.pro");
+        fireup.setHref("https://www.fireup.pro");
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");
         getContent().setJustifyContentMode(JustifyContentMode.START);
@@ -53,16 +83,14 @@ public class EasyAccesstoTasteView extends Composite<VerticalLayout> {
         textLarge.setText(getText());
         textLarge.setWidth("100%");
         textLarge.getStyle().set("font-size", "var(--lumo-font-size-xl)");
-        link.setText("https://github.com/jkuznik/jkuznik");
-        link.setHref("https://github.com/jkuznik/jkuznik");
-        getContent().setAlignSelf(FlexComponent.Alignment.CENTER, link);
-        link.setWidth("min-content");
+        getContent().setAlignSelf(FlexComponent.Alignment.CENTER, github);
+        github.setWidth("min-content");
         getContent().add(layoutRow);
         layoutRow.add(textLarge);
         getContent().add(layoutRow);
 //        layoutRow.add("");
         getContent().add(hr);
-        getContent().add(link);
+        getContent().add(html, github);
     }
 
     private String getText(){

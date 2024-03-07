@@ -275,6 +275,7 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
                 if (restaurant.isActive()) restaurant.setActive(false);
             }
 
+            restaurantService.updateAll(restaurants);
             myOrderService.updateAll(myOrders);
             refreshGrid();
             Notification n = Notification.show("Wysłano zamówienie.");
