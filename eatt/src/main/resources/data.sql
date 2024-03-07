@@ -7,6 +7,7 @@ insert into sentence (version, text) values (1, 'Smacznego!')
 insert into sentence (version, text) values (1, 'Najlepszym sposobem na rozpoczęcie dnia jest pyszne śniadanie.')
 insert into sentence (version, text) values (1, 'Wielu ludzi uważa, że wspólne posiłki są podstawą dobrych relacji.')
 insert into sentence (version, text) values (1, 'Miłego dnia :)')
+insert into sentence (version, text) values (1, 'Haste makes waste.')
 insert into sentence (version, text) values (1, 'Żona programisty- Idź do sklepu i kup chleb, a jak będą jajka to weź 10. W sklepie. - Są jajka? - Tak. - To poproszę 10 chlebów.')
 --DROP TABLE IF EXISTS restaurant
 --create table restaurant (version int, id BIGINT AUTO_INCREMENT primary key, name varchar(255), is_active boolean)
@@ -28,6 +29,12 @@ insert into meal (version, name, is_meal_active, description, allergens, nutriti
 --DROP TABLE IF EXISTS my_order
 --create table my_order (version int, id BIGINT AUTO_INCREMENT PRIMARY KEY, restaurant_name varchar(255), meal_name varchar(255), user_name varchar(255), notes varchar(32766), comment varchar(32766), rating int, email varchar(255), is_active boolean)
 insert into my_order (version, restaurant_name, meal_name, user_name, notes, comment, rating, is_active) values (1, 'Atmosfera', 'Obiad', 'Jan Kowalski', 'Bez uwag', 'Dodaj komentarz', 0, false)
+insert into my_order (version, restaurant_name, meal_name, user_name, notes, comment, rating, is_active) values (1, 'Atmosfera', 'Zestaw surówek', 'Adam Nowak', 'Bez uwag', 'Dodaj komentarz', 0, false)
+insert into my_order (version, restaurant_name, meal_name, user_name, notes, comment, rating, is_active) values (1, 'Atmosfera', 'Pstrąg', 'Adam Nowak', 'Bez uwag', 'Dodaj komentarz', 0, false)
+insert into my_order (version, restaurant_name, meal_name, user_name, notes, comment, rating, is_active) values (1, 'Atmosfera', 'Rolada z kluskami', 'Adam Nowak', 'Bez uwag', 'Dodaj komentarz', 0, false)
+insert into my_order (version, restaurant_name, meal_name, user_name, notes, comment, rating, is_active) values (1, 'Atmosfera', 'Zestaw surówek', 'Adam Nowak', 'Bez uwag', 'Dodaj komentarz', 0, false)
+insert into my_order (version, restaurant_name, meal_name, user_name, notes, comment, rating, is_active) values (1, 'Atmosfera', 'Zestaw surówek', 'Adam Nowak', 'Bez uwag', 'Dodaj komentarz', 0, false)
+insert into my_order (version, restaurant_name, meal_name, user_name, notes, comment, rating, is_active) values (1, 'Atmosfera', 'Zestaw surówek', 'Adam Nowak', 'Bez uwag', 'Dodaj komentarz', 0, false)
 
 
 

@@ -1,13 +1,17 @@
 package pl.jkuznik.views.myorder;
 
 import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -20,6 +24,7 @@ import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import pl.jkuznik.data.meal.MealService;
 import pl.jkuznik.data.myOrder.MyOrder;
 import pl.jkuznik.data.myOrder.MyOrderService;
@@ -49,16 +54,18 @@ public class MyOrderView extends Composite<VerticalLayout>  {
     private TextField comment = new TextField();
     private Button addComment = new Button("Dodaj");
     private Grid<MyOrder> grid = new Grid(MyOrder.class, false);
+    private User loggedUser = new User();
 
     private Select select = new Select();
+    private MyOrder myOrder = new MyOrder();
 
     public MyOrderView(RestaurantService restaurantService, MyOrderService myOrderService, MealService mealService, AuthenticatedUser authenticatedUser) {
         this.restaurantService = restaurantService;
         this.myOrderService = myOrderService;
         this.mealService = mealService;
         this.authenticatedUser = authenticatedUser;
-        User loggedUser = getLoggedUser();
         String currentMyOrder;
+        loggedUser = getLoggedUser();
 
         H1 h1 = new H1();
         //<theme-editor-local-classname>
@@ -85,7 +92,7 @@ public class MyOrderView extends Composite<VerticalLayout>  {
 
         grid.setWidth("80%");
         grid.getStyle().set("flex-grow", "0");
-        setGridSampleData(grid, loggedUser);
+        setGridSampleData(grid);
 
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");
@@ -120,8 +127,14 @@ public class MyOrderView extends Composite<VerticalLayout>  {
         comment.setHelperText("Dodaj komentarz");
 //        horizontalLayout.add(comment, addComment);
         layoutRow2.add(grid, comment, addComment);
+        grid.asSingleSelect().addValueChangeListener(event -> {
+            if (event.getValue() != null) {
+                setOrderToComment(event.getValue());
+            }
+        });
 
-        select.addValueChangeListener(e -> {
+        addCommentClickListener(addComment);
+//        select.addValueChangeListener(e -> {
 //            grid.removeAllColumns();
 //            grid.addColumn("restaurantName").setAutoWidth(true).setHeader("Restauracja");
 //            grid.addColumn("mealName").setAutoWidth(true).setHeader("Danie");
@@ -133,7 +146,10 @@ public class MyOrderView extends Composite<VerticalLayout>  {
 //                            .stream()
 //                            .filter(myOrder -> myOrder.getRestaurantName().equals(select.getLabel())));
 //            refreshGrid();
-        });
+//        });
+    }
+    private void setOrderToComment(MyOrder event){
+        myOrder = event;
     }
     private void setSelectSampleData(Select select) {
         List<Restaurant> restaurants = restaurantService.list();
@@ -142,7 +158,7 @@ public class MyOrderView extends Composite<VerticalLayout>  {
         select.setItemLabelGenerator(item -> ((Restaurant) item).getName());
 //        select.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((SampleItem) item).disabled()));
     }
-    private void setGridSampleData(Grid grid, User loggedUser) {
+    private void setGridSampleData(Grid grid) {
         grid.addColumn("restaurantName").setAutoWidth(true).setHeader("Restauracja");
         grid.addColumn("mealName").setAutoWidth(true).setHeader("Danie");
         grid.addColumn("comment").setAutoWidth(true).setHeader("Komentarz");
@@ -158,6 +174,26 @@ public class MyOrderView extends Composite<VerticalLayout>  {
     private void refreshGrid() {
         grid.select(null);
         grid.getDataProvider().refreshAll();
+    }
+    private void addCommentClickListener(Button button){
+        button.addClickListener(e -> {
+            try {
+
+                myOrder.setComment(comment.getValue());
+                myOrderService.update(myOrder);
+                refreshGrid();
+                Notification n = Notification.show("Dodano komentarz");
+                n.setPosition(Notification.Position.MIDDLE);
+                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            } catch (ObjectOptimisticLockingFailureException exception) {
+                Notification n = Notification.show(
+                        "Error updating the data. Somebody else has updated the record while you were making changes.");
+                n.setPosition(Notification.Position.MIDDLE);
+                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            } catch (IllegalStateException illegalStateException) {
+                Notification.show("Failed to update the data. Check again that all values are valid");
+            }
+        });
     }
     private Restaurant getRestaurant() { // NAPISAĆ TEST
         List<Restaurant> restaurants = restaurantService.list();

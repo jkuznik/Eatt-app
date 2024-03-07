@@ -322,8 +322,12 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
             restaurantService.update(restaurant);
 
             Meal newMeal = new Meal();
-            newMeal.setRestaurantActive(true);
+            newMeal.setRestaurantActive(false);
             newMeal.setRestaurantName(newRestaurant.getValue());
+            newMeal.setName("");
+            newMeal.setAllergens("");
+            newMeal.setDescription("");
+            newMeal.setNutritions("");
             newMeal.setMealActive(false);
             mealService.update(newMeal);
 

@@ -378,12 +378,12 @@ public class EditView extends Div implements BeforeEnterObserver {
                     m.getName().equals(this.meal.getName())) mealService.delete(m.getId());
                 }
 
-                currentRestaurantName = "";
-                currentMealName = "";
                 clearForm();
                 refreshGrid();
-                Notification.show("Usunięto danie " + this.meal.getName()).setPosition(Position.BOTTOM_END);
+                Notification.show("Usunięto danie " + currentMealName).setPosition(Position.BOTTOM_END);
                 UI.getCurrent().navigate(EditView.class);
+                currentRestaurantName = "";
+                currentMealName = "";
             } catch (ObjectOptimisticLockingFailureException exception) {
                 Notification n = Notification.show(
                         "Error updating the data. Somebody else has updated the record while you were making changes.");
