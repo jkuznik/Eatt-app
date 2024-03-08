@@ -16,7 +16,7 @@ public class Email {
     private final String login = "eatt.app@tlen.pl";
     private final String password = "pokyta@r510l";
 
-    private final String host = "smtp.poczta.tlen.pl";
+    private final String host = "poczta.o2.pl";
     private final int port = 465;
 
     public Email(/*LocalDate localDate,*/ List<MyOrder> orderList) {
@@ -32,6 +32,7 @@ public class Email {
             props.put("mail.smtp.starttls.enable", "true");
             props.put("mail.smtp.host", host);
             props.put("mail.smtp.port", port);
+            props.put("mail.smtp.ssl.enable", "true");
             Session session = Session.getInstance(props, new Authenticator() {
                 @Override
                 protected PasswordAuthentication getPasswordAuthentication() {

@@ -66,4 +66,5 @@ public class RandomSenteceTest {
 
         assertEquals(beforeAdd+1, afterAdd);
     }
+
 }

@@ -41,22 +41,25 @@ public class EasyAccesstoTasteView extends Composite<VerticalLayout> {
 
         String textBlock = """
                 <div>
-                    Eatt jest to projekt zainspirowany aplikacją "Lunch in Order" firmy <a href='https://www.fireup.pro'>fireup.pro</a>
-                       <br><br>
-                       Obecna wersja, z dnia 07.03, jest w pełni funkcyjna jednak poza zasięgiem wzroku użytkownika pozostało jeszcze wiele pracy do zrobienia.
-                       Z racji, że w tym projekcie pierwszy raz korzystałem z technologii Vaadin oraz pierwszy raz tworzyłem front-end aplikacji
-                       całość wymaga code review. W początkowej fazie pracy kluczowym był efekt właściwego działania, a wszystkie kwestie
-                       frontendowe były rozwiązywane każdym możliwym sposobem. 
-                       <br><br>
-                       Projekt miał swój początek na <a href='https://vaadin.com/docs/latest/guide/start'>https://vaadin.com/docs/latest/guide/start</a>
-                        -> opcja "Open Vaadin Start"
-                       <br><br>
-                       W razie zainteresowania aplikacją proszę się czuć swobodnie do wykorzystania jej w dowolny sposób, a
-                       dla mnie prawdziwą przyjemnością była by możliwość opowiedzenia wszystkiego na jej temat osobiście.                   
-                       <br><br>
-                       Aplikacja Eatt operuje w oparciu o bazę danych H2. W obecnej konfiguracji każde ponowne uruchomienie 
-                       programu resetuje stan bazy danych do zawartości data.sql. Dostęp do konsoli H2 na endpoincie 
-                       /h2-console   hasło: password  
+                    Eatt jest to projekt zainspirowany aplikacją "Lunch in Order" firmy 
+                    <a href='https://www.fireup.pro'>fireup.pro</a>
+                    <br><br>
+                    Obecna wersja jest w pełni funkcjonalna jednak poza zasięgiem wzroku użytkownika pozostało jeszcze
+                    wiele pracy do zrobienia. Z racji, że w tym projekcie pierwszy raz korzystałem z technologii Vaadin
+                    oraz pierwszy raz tworzyłem front-end aplikacji całość wymaga code review. W początkowej fazie pracy
+                    kluczowym był efekt właściwego działania, a wszystkie kwestie frontendowe były rozwiązywane każdym 
+                    możliwym sposobem. 
+                    <br><br>
+                    Projekt miał swój początek na 
+                    <a href='https://vaadin.com/docs/latest/guide/start'>https://vaadin.com/docs/latest/guide/start</a>
+                    -> opcja "Open Vaadin Start"
+                    <br><br>
+                    W razie zainteresowania aplikacją proszę się czuć swobodnie do wykorzystania jej w dowolny sposób, a
+                    dla mnie prawdziwą przyjemnością była by możliwość opowiedzenia wszystkiego na jej temat osobiście.                   
+                    <br><br>
+                    Aplikacja Eatt operuje w oparciu o bazę danych H2. W obecnej konfiguracji każde ponowne uruchomienie 
+                    programu resetuje stan bazy danych do zawartości data.sql. Dostęp do konsoli H2 na endpoincie 
+                    /h2-console   hasło: password  
                 </div>
                 """;
         Html html = new Html(textBlock);

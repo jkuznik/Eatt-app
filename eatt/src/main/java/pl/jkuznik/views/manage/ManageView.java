@@ -24,6 +24,7 @@ import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import pl.jkuznik.data.email.Email;
 import pl.jkuznik.data.information.Information;
 import pl.jkuznik.data.information.InformationService;
 import pl.jkuznik.data.meal.Meal;
@@ -262,11 +263,12 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
     }
     private void clickOrderListener(Button button) {
         button.addClickListener( e -> {
+            List<MyOrder> myOrders = myOrderService.list().stream()
+                    .filter(MyOrder::isActive)
+                    .toList();
 
-//            Email sendOrder = new Email(orders);
+//            Email sendOrder = new Email(myOrders);
 //            sendOrder.sendMail();
-            List<MyOrder> myOrders = myOrderService.list();
-
             for (MyOrder myOrder : myOrders){
                 if (myOrder.isActive()) myOrder.setActive(false);
             }

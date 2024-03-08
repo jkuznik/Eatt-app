@@ -71,11 +71,14 @@ public class MyOrderView extends Composite<VerticalLayout>  {
         //<theme-editor-local-classname>
         h1.addClassName("my-order-view-h1-1");
         H2 h2 = new H2();
+        //<theme-editor-local-classname>
+        h2.addClassName("my-order-view-h2-1");
         H3 h3 = new H3();
         if (getRestaurant() == null) h1.setText("Wybierz coś dla siebie");
         else h1.setText(getRestaurant().getName());
         h1.setWidth("max-content");
-        if (getMyOrder(loggedUser) != null) currentMyOrder = getMyOrder(loggedUser).getMealName();
+        if (getMyOrder(loggedUser) != null) currentMyOrder = "Czekasz na zamówienie -  " + getMyOrder(loggedUser).getMealName() +
+                                                             ",         uwagi : " + getMyOrder(loggedUser).getNotes();
         else currentMyOrder = "Nie wybrano potrawy. Nie zastanawiaj się długo, kto się spóźni - ten nie je.";
         h2.setText(currentMyOrder);
         h2.setWidth("max-content");

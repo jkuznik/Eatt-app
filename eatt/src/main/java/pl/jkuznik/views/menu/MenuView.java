@@ -297,7 +297,8 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
                     newOrder.setMealName(radioGroup.getValue().toString());
                     newOrder.setUserEmail(loggedUser.getEmail());
                     newOrder.setUserName(loggedUser.getName());
-                    newOrder.setNotes(notes.getValue());
+                    if (notes.getValue().isEmpty()) newOrder.setNotes("Brak");
+                    else newOrder.setNotes(notes.getValue());
                     newOrder.setComment("Dodaj komentarz");
                     newOrder.setRating(0);
                     newOrder.setActive(true);

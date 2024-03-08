@@ -31,7 +31,7 @@ public class Application implements AppShellConfigurator {
 
     @Bean
     SqlDataSourceScriptDatabaseInitializer dataSourceScriptDatabaseInitializer(DataSource dataSource,
-            SqlInitializationProperties properties /*, SamplePersonRepository repository   ten argument tworzy tabele w bazie danych, inny sposób - patrz klasa User adnotacja @Table*/) {
+            SqlInitializationProperties properties ) {
 
         // This bean ensures the database is only initialized when empty
 //        properties.setMode(DatabaseInitializationMode.EMBEDDED);
