@@ -26,11 +26,11 @@ public class RandomSenteceTest {
     @InjectMocks
     private SentencesService sentencesService;
     @Test
-    public void getSentence(){  // Empty
+    public void getSentenceIfDataBaseIsEmpty(){
         assertEquals("Brak sentencji w bazie danych", randomSentence.getSentence());
     }
     @Test
-    public void getSentence2(){  // Filled
+    public void getSentenceIfDataBaseIsFilled(){  // Filled
 
         List<String> list = List.of("test1", "test2", "test3");
         list.forEach(randomSentence::addSentence);
@@ -41,7 +41,7 @@ public class RandomSenteceTest {
         assertTrue(list.contains(random));
     }
     @Test
-    public void clear() {
+    public void getSentencesListSizeAfterClear() {
 
         List<Sentence> sentences = sentencesService.list();
         for (Sentence s : sentences) {
@@ -55,7 +55,7 @@ public class RandomSenteceTest {
         assertEquals(0, size);
     }
     @Test
-    public void addSentence(){
+    public void addSentenceToSentencesList(){
         List<Sentence> sentences = sentencesService.list();
         for (Sentence s : sentences) {
             randomSentence.addSentence(s.getText());

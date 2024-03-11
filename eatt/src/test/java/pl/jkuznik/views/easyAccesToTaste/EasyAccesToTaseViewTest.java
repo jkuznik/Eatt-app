@@ -6,7 +6,7 @@ import pl.jkuznik.data.sentence.RandomSentence;
 
 public class EasyAccesToTaseViewTest {
     @Test
-    public void getText(){
+    public void tryNotNullSentenceWhenSencencesListIsEmpty(){
         RandomSentence randomSentence = new RandomSentence();
         Assertions.assertNotNull(randomSentence.getSentence());
     }

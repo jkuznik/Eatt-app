@@ -18,7 +18,7 @@ class SentencesServiceTest {
     private SentencesService sentencesService;
 
     @Test
-    void count() {
+    void countDataBaseSentencesListSize() {
         BDDMockito.given(sentenceRepository.count()).willReturn(10L);
         Assertions.assertThat(sentencesService.count()).isEqualTo(10);
     }
