@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class SentencesService {
+public class SentenceService {
     private final SentenceRepository repository;
 
-    public SentencesService(SentenceRepository repository) {
+    public SentenceService(SentenceRepository repository) {
         this.repository = repository;
     }
 

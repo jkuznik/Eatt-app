@@ -22,7 +22,7 @@ import pl.jkuznik.data.information.Information;
 import pl.jkuznik.data.sentence.RandomSentence;
 import pl.jkuznik.data.sentence.Sentence;
 import pl.jkuznik.data.information.InformationService;
-import pl.jkuznik.data.sentence.SentencesService;
+import pl.jkuznik.data.sentence.SentenceService;
 import pl.jkuznik.views.MainLayout;
 
 import java.util.List;
@@ -33,9 +33,9 @@ import java.util.List;
 @PermitAll
 @Uses(Icon.class)
 public class EasyAccessToTasteView extends Composite<VerticalLayout> {
-    private final SentencesService sentencesService;
+    private final SentenceService sentencesService;
     private final InformationService informationService;
-    public EasyAccessToTasteView(SentencesService sentencesService, InformationService informationService) {
+    public EasyAccessToTasteView(SentenceService sentencesService, InformationService informationService) {
         this.sentencesService = sentencesService;
         this.informationService = informationService;
 

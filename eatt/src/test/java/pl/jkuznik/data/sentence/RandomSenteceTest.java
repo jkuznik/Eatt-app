@@ -1,9 +1,7 @@
 package pl.jkuznik.data.sentence;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -13,7 +11,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(MockitoExtension.class)
 public class RandomSenteceTest {
@@ -24,13 +21,13 @@ public class RandomSenteceTest {
     private SentenceRepository sentenceRepository;
 
     @InjectMocks
-    private SentencesService sentencesService;
+    private SentenceService sentencesService;
     @Test
-    public void getSentenceIfDataBaseIsEmpty(){
+    void getSentenceIfDataBaseIsEmpty(){
         assertEquals("Brak sentencji w bazie danych", randomSentence.getSentence());
     }
     @Test
-    public void getSentenceIfDataBaseIsFilled(){  // Filled
+    void getSentenceIfDataBaseIsFilled(){  // Filled
 
         List<String> list = List.of("test1", "test2", "test3");
         list.forEach(randomSentence::addSentence);
@@ -41,7 +38,7 @@ public class RandomSenteceTest {
         assertTrue(list.contains(random));
     }
     @Test
-    public void getSentencesListSizeAfterClear() {
+    void getSentencesListSizeAfterClear() {
 
         List<Sentence> sentences = sentencesService.list();
         for (Sentence s : sentences) {
@@ -55,7 +52,7 @@ public class RandomSenteceTest {
         assertEquals(0, size);
     }
     @Test
-    public void addSentenceToSentencesList(){
+    void addSentenceToSentencesList(){
         List<Sentence> sentences = sentencesService.list();
         for (Sentence s : sentences) {
             randomSentence.addSentence(s.getText());
