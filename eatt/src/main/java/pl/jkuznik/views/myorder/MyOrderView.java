@@ -1,13 +1,10 @@
 package pl.jkuznik.views.myorder;
 
 import com.vaadin.flow.component.Composite;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.icon.Icon;
@@ -26,7 +23,6 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import pl.jkuznik.data.meal.MealService;
 import pl.jkuznik.data.myOrder.MyOrder;
 import pl.jkuznik.data.myOrder.MyOrderService;
 import pl.jkuznik.data.restaurant.Restaurant;
@@ -50,11 +46,15 @@ public class MyOrderView extends Composite<VerticalLayout>  {
     private HorizontalLayout layoutRow = new HorizontalLayout();
     private VerticalLayout layoutColumn2 = new VerticalLayout();
     private HorizontalLayout layoutRow2 = new HorizontalLayout();
-    private HorizontalLayout horizontalLayout = new HorizontalLayout();
+    private VerticalLayout horizontalLayout = new VerticalLayout();
+    private HorizontalLayout commentLayout = new HorizontalLayout();
+    private HorizontalLayout rateLayout = new HorizontalLayout();
     private TextField comment = new TextField();
     private Button addComment = new Button("Dodaj");
     private Grid<MyOrder> grid = new Grid(MyOrder.class, false);
     private User loggedUser = new User();
+    private Select rateSelect = new Select();
+    private Button addRate = new Button("Oceń");
 
     private Select select = new Select();
     private MyOrder myOrder = new MyOrder();
@@ -84,10 +84,6 @@ public class MyOrderView extends Composite<VerticalLayout>  {
         h3.setText(currentMyOrder);
         h4.setText("Historia zrealizowanych zamówień");
 
-        select.setLabel("Historia zamówień");
-        select.setWidth("min-content");
-        setSelectSampleData(select);
-
         grid.setWidth("80%");
         grid.getStyle().set("flex-grow", "0");
         setGridSampleData(grid);
@@ -115,6 +111,10 @@ public class MyOrderView extends Composite<VerticalLayout>  {
         layoutRow2.getStyle().set("flex-grow", "1");
         getContent().setFlexGrow(1.0, layoutRow2);
 
+//        select.setLabel("Historia zamówień");
+//        select.setWidth("min-content");
+//        setSelectSampleData(select);
+/** Tutaj było dodawanie selectu z której restauracji historię chcesz wyświetlić*/
 //        Button buttonSecondary = new Button();
 //        buttonSecondary.setText("Wybierz");
 //        buttonSecondary.setWidth("min-content");
@@ -127,7 +127,17 @@ public class MyOrderView extends Composite<VerticalLayout>  {
 //        layoutColumn2.add(buttonSecondary);
         getContent().add(h4, layoutRow2);
         comment.setHelperText("Dodaj komentarz");
-        layoutRow2.add(grid, comment, addComment);
+        rateSelect.setHelperText("Oceń");
+        setRateSelectData(rateSelect);
+
+        commentLayout.add(comment ,addComment);
+        rateLayout.add(rateSelect, addRate);
+        horizontalLayout.add(commentLayout, rateLayout);
+        horizontalLayout.setWidth("300px");
+        layoutRow2.add(grid, horizontalLayout);
+
+        addCommentClickListener(addComment);    // dopisać obsługę beforeClick bo leci nullpointer
+        addRateClickListener(addRate);
 
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
@@ -145,6 +155,12 @@ public class MyOrderView extends Composite<VerticalLayout>  {
         select.setItems(restaurants);
         select.setItemLabelGenerator(item -> ((Restaurant) item).getName());
 //        select.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((SampleItem) item).disabled()));
+    }
+    private void setRateSelectData(Select rateSelect){
+        List<Integer> rates = List.of(1,2,3,4,5);
+        rateSelect.setItems(rates);
+        rateSelect.setItemLabelGenerator(Object::toString);
+
     }
     private void setGridSampleData(Grid grid) {
         grid.addColumn("restaurantName").setAutoWidth(true).setHeader("Restauracja");
@@ -166,11 +182,36 @@ public class MyOrderView extends Composite<VerticalLayout>  {
     private void addCommentClickListener(Button button){
         button.addClickListener(e -> {
             try {
-
+                if (myOrder == null){   // tu zmienić bo nie spełnia funkcji
+                    return;
+                }
                 myOrder.setComment(comment.getValue());
                 myOrderService.update(myOrder);
                 refreshGrid();
                 Notification n = Notification.show("Dodano komentarz");
+                n.setPosition(Notification.Position.MIDDLE);
+                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            } catch (ObjectOptimisticLockingFailureException exception) {
+                Notification n = Notification.show(
+                        "ObjectOptimisticLockingFailureException podczas dodawania komentarza w my_order do rekodu " + myOrder.getId());
+                n.setPosition(Notification.Position.MIDDLE);
+                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            } catch (IllegalStateException illegalStateException) {
+                Notification.show("IllegalStateException podczas dodawania komentarza w my_order do rekodu " + myOrder.getId());
+            }
+        });
+    }
+    private void addRateClickListener(Button button){
+        button.addClickListener(e -> {
+            try {
+                if (myOrder == null){
+                    return;
+                }
+                Object value = rateSelect.getValue();
+                myOrder.setRating( (Integer) value);
+                myOrderService.update(myOrder);
+                refreshGrid();
+                Notification n = Notification.show("Dodano ocene " + value);
                 n.setPosition(Notification.Position.MIDDLE);
                 n.addThemeVariants(NotificationVariant.LUMO_ERROR);
             } catch (ObjectOptimisticLockingFailureException exception) {
