@@ -41,7 +41,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @PageTitle("Edit")
-@Route(value = "collaborative-master-detail/:mealID?/:action?(edit)", layout = MainLayout.class)
+@Route(value = "edit-view", layout = MainLayout.class)
 @RolesAllowed("ADMIN")
 @Uses(Icon.class)
 public class EditView extends Div implements BeforeEnterObserver {

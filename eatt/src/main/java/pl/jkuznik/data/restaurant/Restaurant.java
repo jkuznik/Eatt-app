@@ -8,7 +8,7 @@ import pl.jkuznik.data.AbstractEntity;
 import java.time.LocalDate;
 
 @Entity
-//@Table(name ="restaurant")    tworzenie nowej tabeli w bazie danych bezpośrendio z tego miejsca
+@Table(name ="restaurant")
 public class Restaurant extends AbstractEntity {
 
     private String name;

@@ -14,19 +14,21 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import org.vaadin.lineawesome.LineAwesomeIcon;
+import pl.jkuznik.data.user.User;
+import pl.jkuznik.security.AuthenticatedUser;
+import pl.jkuznik.views.easyAccessToTaste.EasyAccessToTasteView;
+//import pl.jkuznik.views.edit.EditView;
+import pl.jkuznik.views.edit.*;
+import pl.jkuznik.views.manage.ManageView;
+import pl.jkuznik.views.menu.MenuView;
+import pl.jkuznik.views.myorder.MyOrderView;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Optional;
-import org.vaadin.lineawesome.LineAwesomeIcon;
-import pl.jkuznik.data.user.User;
-import pl.jkuznik.security.AuthenticatedUser;
-import pl.jkuznik.views.easyaccesstotaste.EasyAccesstoTasteView;
-import pl.jkuznik.views.edit.*;
-import pl.jkuznik.views.manage.ManageView;
-import pl.jkuznik.views.menu.MenuView;
-import pl.jkuznik.views.myorder.MyOrderView;
 
 /**
  * The main view is a top-level placeholder for other views.
@@ -85,8 +87,8 @@ public class MainLayout extends AppLayout {
     private SideNav createNavigation() {
         SideNav nav = new SideNav();
 
-        if (accessChecker.hasAccess(EasyAccesstoTasteView.class)) {
-            nav.addItem(new SideNavItem("Easy Access to Taste", EasyAccesstoTasteView.class,
+        if (accessChecker.hasAccess(EasyAccessToTasteView.class)) {
+            nav.addItem(new SideNavItem("Easy Access to Taste", EasyAccessToTasteView.class,
                     LineAwesomeIcon.APPLE_ALT_SOLID.create()));
 
         }

@@ -35,6 +35,8 @@ import pl.jkuznik.views.MainLayout;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -236,6 +238,14 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
     private void orderClickListener(Button button) {
         button.addClickListener(e -> {
             try {
+                LocalDateTime now = LocalDateTime.now();
+                if (now.getHour()>=15 && now.getMinute()>=30){
+                    Notification n = Notification.show("Niestety zamówienia były możliwe do 15.30. Jeżeli bardzo chcesz zamówić coś dla siebie skontaktuj się osobiście z administracją.");;
+                    n.setPosition(Notification.Position.MIDDLE);
+                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    n.setDuration(15000);
+                    return;
+                }
                 if (radioGroup.getValue() != null) {
                     List<MyOrder> actualMyOrders = myOrderService.list();
                     User loggedUser = getLoggedUser();
@@ -244,6 +254,7 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
                     });
                     MyOrder newOrder = new MyOrder();
                     newOrder.setRestaurantName(radioGroup.getLabel());
+                    newOrder.setDate(LocalDateTime.now());
                     newOrder.setMealName(radioGroup.getValue().toString());
                     newOrder.setUserEmail(loggedUser.getEmail());
                     newOrder.setUserName(loggedUser.getName());
@@ -257,8 +268,7 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
                     myOrderService.updateAll(actualMyOrders);
 
                     Notification n = Notification.show("Witaj " + loggedUser.getName() + ". Zamówiono " + radioGroup.getValue().toString() + ". Życzymy smacznego!");
-                    n.setPosition(Notification.Position.MIDDLE);
-                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+
                     verticalLayout.remove(order);
                     verticalLayout.add(change);
                     absent.addThemeVariants(ButtonVariant.LUMO_ERROR);
@@ -267,17 +277,25 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
                 } else Notification.show("Nie wybrano żadnej potrawy ");
             } catch (ObjectOptimisticLockingFailureException exception) {
                 Notification n = Notification.show(
-                        "Error updating the data. Somebody else has updated the record while you were making changes.");
+                        "ObjectOptimisticLockingFailureException podczas zamawiania przez " + getLoggedUser().getName());
                 n.setPosition(Notification.Position.MIDDLE);
                 n.addThemeVariants(NotificationVariant.LUMO_ERROR);
             } catch (IllegalStateException illegalStateException) {
-                Notification.show("Failed to update the data. Check again that all values are valid");
+                Notification.show("IllegalStateException podczas zamawiania przez " + getLoggedUser().getName());
             }
         });
     }
     private void changeClickListener(Button button) {
         button.addClickListener(e -> {
             try {
+                LocalDateTime now = LocalDateTime.now();
+                if (now.getHour()>=15 && now.getMinute()>=30){
+                    Notification n = Notification.show("Niestety zamówienia oraz zmiany były możliwe do 15.30. Jeżeli bardzo chcesz zmienić zamówienie skontaktuj się z administracją.");;
+                    n.setPosition(Notification.Position.MIDDLE);
+                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    n.setDuration(15000);
+                    return;
+                }
                 if (radioGroup.getValue() != null) {
                     List<MyOrder> myOrders = myOrderService.list();
                     User loggedUser = getLoggedUser();
@@ -294,6 +312,7 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
 
                     MyOrder newOrder = new MyOrder();
                     newOrder.setRestaurantName(radioGroup.getLabel());
+                    newOrder.setDate(LocalDateTime.now());
                     newOrder.setMealName(radioGroup.getValue().toString());
                     newOrder.setUserEmail(loggedUser.getEmail());
                     newOrder.setUserName(loggedUser.getName());
@@ -315,17 +334,25 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
                 } else Notification.show("Nie wybrano żadnej potrawy ");
             } catch (ObjectOptimisticLockingFailureException exception) {
                 Notification n = Notification.show(
-                        "Error updating the data. Somebody else has updated the record while you were making changes.");
+                        "ObjectOptimisticLockingFailureException podczas zmiany zamówienia przez " + getLoggedUser().getName());
                 n.setPosition(Notification.Position.MIDDLE);
                 n.addThemeVariants(NotificationVariant.LUMO_ERROR);
             } catch (IllegalStateException illegalStateException) {
-                Notification.show("Failed to update the data. Check again that all values are valid");
+                Notification.show("IllegalStateException podczas zmiany zamówienia przez " + getLoggedUser().getName());
             }
         });
     }
     private void absentClickListener(Button button) {
         button.addClickListener(e -> {
             try {
+                LocalDateTime now = LocalDateTime.now();
+                if (now.getHour()>=15 && now.getMinute()>=30){
+                    Notification n = Notification.show("Po godzinie 15.30 aby odwołać zamówienie konieczny jest kontakt osobisty z administracją");;
+                    n.setPosition(Notification.Position.MIDDLE);
+                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    n.setDuration(15000);
+                    return;
+                }
                     List<MyOrder> actualMyOrders = myOrderService.list();
                     User loggedUser = getLoggedUser();
                     String cancelOrder;
@@ -353,11 +380,11 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
 
             } catch (ObjectOptimisticLockingFailureException exception) {
                 Notification n = Notification.show(
-                        "Error updating the data. Somebody else has updated the record while you were making changes.");
+                        "ObjectOptimisticLockingFailureException podczas alunowania zamówienia przez " + getLoggedUser().getName());
                 n.setPosition(Notification.Position.MIDDLE);
                 n.addThemeVariants(NotificationVariant.LUMO_ERROR);
             } catch (IllegalStateException illegalStateException) {
-                Notification.show("Failed to update the data. Check again that all values are valid");
+                Notification.show("IllegalStateException podczas alunowania zamówienia przez " + getLoggedUser().getName());
             }
         });
     }

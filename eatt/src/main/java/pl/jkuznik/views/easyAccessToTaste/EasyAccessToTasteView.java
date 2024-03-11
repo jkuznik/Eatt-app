@@ -1,4 +1,4 @@
-package pl.jkuznik.views.easyaccesstotaste;
+package pl.jkuznik.views.easyAccessToTaste;
 
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.Html;
@@ -32,10 +32,10 @@ import java.util.List;
 @RouteAlias(value = "", layout = MainLayout.class)
 @PermitAll
 @Uses(Icon.class)
-public class EasyAccesstoTasteView extends Composite<VerticalLayout> {
+public class EasyAccessToTasteView extends Composite<VerticalLayout> {
     private final SentencesService sentencesService;
     private final InformationService informationService;
-    public EasyAccesstoTasteView(SentencesService sentencesService, InformationService informationService) {
+    public EasyAccessToTasteView(SentencesService sentencesService, InformationService informationService) {
         this.sentencesService = sentencesService;
         this.informationService = informationService;
 
@@ -98,7 +98,7 @@ public class EasyAccesstoTasteView extends Composite<VerticalLayout> {
         getContent().add(html, github);
     }
 
-    private String getText(){
+    private String getText(){       // Napisać test
         List<Information> list = informationService.list();
         Information information = list.stream()
                 .filter(Information::isActive)
@@ -115,7 +115,5 @@ public class EasyAccesstoTasteView extends Composite<VerticalLayout> {
 
         return randomSentence.getSentence();
 
-//        if (information.getText().isEmpty()) return randomSentence.getSentence();
-//        else return information.getText();
     }
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import pl.jkuznik.data.AbstractEntity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name ="my_order")
@@ -12,7 +13,7 @@ public class MyOrder extends AbstractEntity {
     /*@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;*/
-    private LocalDate date;
+    private LocalDateTime date;
     private String restaurantName;
     private String mealName;
     private String userName;
@@ -25,11 +26,11 @@ public class MyOrder extends AbstractEntity {
     public MyOrder() {
     }
 
-    public LocalDate getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 

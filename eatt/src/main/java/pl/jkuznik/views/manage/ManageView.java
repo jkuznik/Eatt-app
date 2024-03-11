@@ -24,7 +24,6 @@ import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import pl.jkuznik.data.email.Email;
 import pl.jkuznik.data.information.Information;
 import pl.jkuznik.data.information.InformationService;
 import pl.jkuznik.data.meal.Meal;
@@ -35,6 +34,7 @@ import pl.jkuznik.data.restaurant.Restaurant;
 import pl.jkuznik.data.restaurant.RestaurantService;
 import pl.jkuznik.views.MainLayout;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -197,6 +197,7 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
                 if (select.getValue() != null) {
                     Restaurant restaurant = (Restaurant) select.getValue();
                     restaurantName = restaurant.getName();
+
                     Notification n = Notification.show("Do następnego zamówienia wybrano " + restaurantName);
                     n.setPosition(Notification.Position.BOTTOM_END);
                     List<Restaurant> restaurants = restaurantService.list();
@@ -263,6 +264,16 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
     }
     private void clickOrderListener(Button button) {
         button.addClickListener( e -> {
+
+            LocalDateTime now = LocalDateTime.now();
+            if (now.getHour()<=15 && now.getMinute()<=31){
+                Notification n = Notification.show("Nie możesz zrealizować zamówienia przed 15.31");;
+                n.setPosition(Notification.Position.MIDDLE);
+                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                n.setDuration(3000);
+                return;
+            }
+
             List<MyOrder> myOrders = myOrderService.list().stream()
                     .filter(MyOrder::isActive)
                     .toList();

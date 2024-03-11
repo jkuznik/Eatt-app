@@ -20,8 +20,8 @@ public class RandomSenteceTest {
 
     private RandomSentence randomSentence = new RandomSentence();
 
-//    @Mock
-//    private SentenceRepository sentenceRepository;
+    @Mock
+    private SentenceRepository sentenceRepository;
 
     @InjectMocks
     private SentencesService sentencesService;

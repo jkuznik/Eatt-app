@@ -9,6 +9,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -45,7 +46,6 @@ import java.util.Optional;
 public class MyOrderView extends Composite<VerticalLayout>  {
     private final RestaurantService restaurantService;
     private final MyOrderService myOrderService;
-    private final MealService mealService;
     private final AuthenticatedUser authenticatedUser;
     private HorizontalLayout layoutRow = new HorizontalLayout();
     private VerticalLayout layoutColumn2 = new VerticalLayout();
@@ -59,36 +59,31 @@ public class MyOrderView extends Composite<VerticalLayout>  {
     private Select select = new Select();
     private MyOrder myOrder = new MyOrder();
 
-    public MyOrderView(RestaurantService restaurantService, MyOrderService myOrderService, MealService mealService, AuthenticatedUser authenticatedUser) {
+    public MyOrderView(RestaurantService restaurantService, MyOrderService myOrderService, AuthenticatedUser authenticatedUser) {
         this.restaurantService = restaurantService;
         this.myOrderService = myOrderService;
-        this.mealService = mealService;
         this.authenticatedUser = authenticatedUser;
         String currentMyOrder;
         loggedUser = getLoggedUser();
 
         H1 h1 = new H1();
-        //<theme-editor-local-classname>
-        h1.addClassName("my-order-view-h1-1");
-        H2 h2 = new H2();
-        //<theme-editor-local-classname>
-        h2.addClassName("my-order-view-h2-1");
         H3 h3 = new H3();
+        H4 h4 = new H4();
+
+        h1.setWidth("max-content");
+        h1.addClassName("my-order-view-h1-1");
+        h3.setWidth("max-content");
+
         if (getRestaurant() == null) h1.setText("Wybierz coś dla siebie");
         else h1.setText(getRestaurant().getName());
-        h1.setWidth("max-content");
+
         if (getMyOrder(loggedUser) != null) currentMyOrder = "Czekasz na zamówienie -  " + getMyOrder(loggedUser).getMealName() +
                                                              ",         uwagi : " + getMyOrder(loggedUser).getNotes();
         else currentMyOrder = "Nie wybrano potrawy. Nie zastanawiaj się długo, kto się spóźni - ten nie je.";
-        h2.setText(currentMyOrder);
-        h2.setWidth("max-content");
-        h3.setText("Historia zrealizowanych zamówień");
 
+        h3.setText(currentMyOrder);
+        h4.setText("Historia zrealizowanych zamówień");
 
-//        Button buttonSecondary = new Button();
-//        buttonSecondary.setText("Wybierz");
-//        buttonSecondary.setWidth("min-content");
-//
         select.setLabel("Historia zamówień");
         select.setWidth("min-content");
         setSelectSampleData(select);
@@ -97,59 +92,49 @@ public class MyOrderView extends Composite<VerticalLayout>  {
         grid.getStyle().set("flex-grow", "0");
         setGridSampleData(grid);
 
-        getContent().setWidth("100%");
-        getContent().getStyle().set("flex-grow", "1");
-
         layoutRow.setWidthFull();
-        getContent().setFlexGrow(1.0, layoutRow);
         layoutRow.addClassName(Gap.MEDIUM);
         layoutRow.setWidth("100%");
         layoutRow.getStyle().set("flex-grow", "1");
         layoutRow.setAlignItems(Alignment.START);
         layoutRow.setJustifyContentMode(JustifyContentMode.START);
+        layoutRow.setFlexGrow(1.0, layoutColumn2);
+
+        getContent().setWidth("100%");
+        getContent().getStyle().set("flex-grow", "1");
+        getContent().setFlexGrow(1.0, layoutRow);
 
         layoutColumn2.setHeightFull();
-        layoutRow.setFlexGrow(1.0, layoutColumn2);
         layoutColumn2.setWidth("80%");
         layoutColumn2.getStyle().set("flex-grow", "1");
         layoutColumn2.setJustifyContentMode(JustifyContentMode.CENTER);
         layoutColumn2.setAlignItems(Alignment.START);
         layoutRow2.setWidthFull();
-        getContent().setFlexGrow(1.0, layoutRow2);
         layoutRow2.addClassName(Gap.MEDIUM);
         layoutRow2.setWidth("100%");
         layoutRow2.getStyle().set("flex-grow", "1");
+        getContent().setFlexGrow(1.0, layoutRow2);
+
+//        Button buttonSecondary = new Button();
+//        buttonSecondary.setText("Wybierz");
+//        buttonSecondary.setWidth("min-content");
 
         getContent().add(h1);
-        getContent().add(h2);
+        getContent().add(h3);
         getContent().add(layoutRow);
 //        layoutRow.add(select);
 //        layoutRow.add(layoutColumn2);
 //        layoutColumn2.add(buttonSecondary);
-        getContent().add(h3, layoutRow2);
+        getContent().add(h4, layoutRow2);
         comment.setHelperText("Dodaj komentarz");
-//        horizontalLayout.add(comment, addComment);
         layoutRow2.add(grid, comment, addComment);
+
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
                 setOrderToComment(event.getValue());
             }
         });
 
-        addCommentClickListener(addComment);
-//        select.addValueChangeListener(e -> {
-//            grid.removeAllColumns();
-//            grid.addColumn("restaurantName").setAutoWidth(true).setHeader("Restauracja");
-//            grid.addColumn("mealName").setAutoWidth(true).setHeader("Danie");
-//            grid.addColumn("comment").setAutoWidth(true).setHeader("Komentarz");
-//            grid.addColumn("rating").setAutoWidth(true).setHeader("Ocena");
-//
-//            grid.setItems(query -> myOrderService.list(
-//                    PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
-//                            .stream()
-//                            .filter(myOrder -> myOrder.getRestaurantName().equals(select.getLabel())));
-//            refreshGrid();
-//        });
     }
     private void setOrderToComment(MyOrder event){
         myOrder = event;
@@ -165,7 +150,7 @@ public class MyOrderView extends Composite<VerticalLayout>  {
         grid.addColumn("restaurantName").setAutoWidth(true).setHeader("Restauracja");
         grid.addColumn("mealName").setAutoWidth(true).setHeader("Danie");
         grid.addColumn("comment").setAutoWidth(true).setHeader("Komentarz");
-//        grid.addColumn("rating").setAutoWidth(true).setHeader("Ocena");
+        grid.addColumn("rating").setAutoWidth(true).setHeader("Ocena");
 
         grid.setItems(query -> myOrderService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
@@ -190,11 +175,11 @@ public class MyOrderView extends Composite<VerticalLayout>  {
                 n.addThemeVariants(NotificationVariant.LUMO_ERROR);
             } catch (ObjectOptimisticLockingFailureException exception) {
                 Notification n = Notification.show(
-                        "Error updating the data. Somebody else has updated the record while you were making changes.");
+                        "ObjectOptimisticLockingFailureException podczas dodawania komentarza w my_order do rekodu " + myOrder.getId());
                 n.setPosition(Notification.Position.MIDDLE);
                 n.addThemeVariants(NotificationVariant.LUMO_ERROR);
             } catch (IllegalStateException illegalStateException) {
-                Notification.show("Failed to update the data. Check again that all values are valid");
+                Notification.show("IllegalStateException podczas dodawania komentarza w my_order do rekodu " + myOrder.getId());
             }
         });
     }
