@@ -63,6 +63,8 @@ public class MainLayout extends AppLayout {
         H1 appName = new H1("Eatt");
         appName.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
         Header header = new Header(appName);
+        //<theme-editor-local-classname>
+        header.addClassName("main-layout-header-1");
 
         Image image = new Image();
         try {

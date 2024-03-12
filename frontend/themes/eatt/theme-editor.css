@@ -1,0 +1,78 @@
+/*
+ * This file has been created by the Vaadin Theme Editor. Please note that
+ * manual changes to individual CSS properties may be overwritten by the theme editor.
+ */
+body { background-color:rgba(53,5,71,1); }
+
+div.easy-access-to-taste-view-div-1 { color:var(--lumo-secondary-text-color); }
+
+footer { background-color:rgba(53,5,71,1); }
+
+h1 { color:var(--lumo-secondary-text-color); }
+
+h3 { color:var(--lumo-body-text-color); }
+
+h4 { color:var(--lumo-secondary-text-color); }
+
+header { background-color:rgba(53,5,71,1); }
+
+img { background-color:rgba(53,5,71,1); }
+
+p { color:rgba(247,145,25,0.92); }
+
+vaadin-app-layout { background-color:rgba(53,5,71,1); }
+
+vaadin-app-layout.main-layout-header-1 { background-color:rgba(53,5,71,1); }
+
+vaadin-app-layout.main-layout-header-1::part(drawer) { background-color:rgba(53,5,71,1); }
+
+vaadin-app-layout::part(drawer) { background-color:rgba(53,5,71,1); }
+
+vaadin-app-layout::part(navbar) { background-color:rgba(53,5,71,1); }
+
+vaadin-form-layout { background-color:rgba(53,5,71,1); }
+
+vaadin-grid vaadin-grid-cell-content>vaadin-checkbox[checked]::part(checkbox) { background-color:rgba(53,5,71,1); }
+
+vaadin-grid::part(body-cell) {
+  background-color:rgba(53,5,71,1);
+  color:var(--lumo-secondary-text-color);
+  font-size:var(--lumo-font-size-xs);
+  font-weight:bold;
+}
+
+vaadin-grid::part(even-row-cell) { background-color:rgba(53,5,71,1); }
+
+vaadin-grid::part(header-cell) {
+  --lumo-font-size-s:var(--lumo-font-size-xs);
+  background-color:rgba(53,5,71,1);
+  font-style:italic;
+}
+
+vaadin-grid::part(odd-row-cell) { background-color:rgba(53,5,71,1); }
+
+vaadin-grid::part(selected-row-cell) { background-color:rgba(53,5,71,1); }
+
+vaadin-horizontal-layout { background-color:rgba(53,5,71,1); }
+
+vaadin-login-overlay-wrapper.login-view-login-overlay-1 vaadin-login-form vaadin-login-form-wrapper { background-color:rgba(53,5,71,1); }
+
+vaadin-login-overlay-wrapper.login-view-login-overlay-1::part(backdrop) { background-color:rgba(53,5,71,1); }
+
+vaadin-radio-group vaadin-radio-button label { color:var(--lumo-secondary-text-color); }
+
+vaadin-radio-group::part(label) { color:var(--lumo-body-text-color); }
+
+vaadin-scroller { background-color:rgba(53,5,71,1); }
+
+vaadin-split-layout { background-color:rgba(53,5,71,1); }
+
+vaadin-split-layout::part(handle)::after { background-color:rgba(53,5,71,1); }
+
+vaadin-text-field::part(input-field) { color:var(--lumo-secondary-text-color); }
+
+vaadin-text-field::part(label) { color:var(--lumo-body-text-color); }
+
+vaadin-vertical-layout { gap:var(--lumo-space-s); }
+
+vaadin-vertical-layout.menu-view-vertical-layout-1 { background-color:rgba(53,5,71,1); }

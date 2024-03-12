@@ -207,7 +207,7 @@ public class EditView extends Div implements BeforeEnterObserver {
         buttonLayout.setClassName("button-layout");
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        delete.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
         add.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         buttonLayout.add(add, cancel, save, delete);
         editorLayoutDiv.add(buttonLayout);

@@ -266,7 +266,7 @@ public class ManageView extends Div {
         button.addClickListener( e -> {
 
             LocalDateTime now = LocalDateTime.now();
-            if (now.getHour()<=15 && now.getMinute()<=31){
+            if ((now.getHour()<=15 && now.getMinute()<=31) || now.getHour()<16){
                 Notification n = Notification.show("Nie możesz zrealizować zamówienia przed 15.31");;
                 n.setPosition(Notification.Position.MIDDLE);
                 n.addThemeVariants(NotificationVariant.LUMO_ERROR);

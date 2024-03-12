@@ -31,6 +31,8 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver {
 
         setForgotPasswordButtonVisible(false);  // DODAĆ ODSYŁACZ DO KONTAKTU ZE MNĄ
         setOpened(true);
+        //<theme-editor-local-classname>
+        addClassName("login-view-login-overlay-1");
     }
 
     @Override

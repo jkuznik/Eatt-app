@@ -129,6 +129,8 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
         changeClickListener(change);
         absentClickListener(absent);
     radioGroup.addValueChangeListener(event -> setAccordionSampleDataAndRefresh(accordion, notes, radioGroup, order, change, absent, descriptionLayout, allergensLayout, nutritionsLayout));
+    //<theme-editor-local-classname>
+    addClassName("menu-view-vertical-layout-1");
     }
     private void setAccoriondSampleData(Accordion accordion, RadioButtonGroup radioGroup){
         if (getRestaurant() == null) description = new Span("Wybierz restaurację");
@@ -239,7 +241,7 @@ public class MenuView extends Composite<VerticalLayout> { // poprawić tę klas�
         button.addClickListener(e -> {
             try {
                 LocalDateTime now = LocalDateTime.now();
-                if (now.getHour()>=15 && now.getMinute()>=30){
+                if ((now.getHour()>=15 && now.getMinute()>=30) || now.getHour()>16){
                     Notification n = Notification.show("Niestety zamówienia były możliwe do 15.30. Jeżeli bardzo chcesz zamówić coś dla siebie skontaktuj się osobiście z administracją.");;
                     n.setPosition(Notification.Position.MIDDLE);
                     n.addThemeVariants(NotificationVariant.LUMO_ERROR);

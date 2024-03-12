@@ -63,6 +63,8 @@ public class EasyAccessToTasteView extends Composite<VerticalLayout> {
                 </div>
                 """;
         Html html = new Html(textBlock);
+        //<theme-editor-local-classname>
+        html.addClassName("easy-access-to-taste-view-div-1");
 
 
         HorizontalLayout layoutRow = new HorizontalLayout();
