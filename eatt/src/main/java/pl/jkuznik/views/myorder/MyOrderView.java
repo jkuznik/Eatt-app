@@ -182,7 +182,7 @@ public class MyOrderView extends Composite<VerticalLayout>  {
     private void addCommentClickListener(Button button){
         button.addClickListener(e -> {
             try {
-                if (myOrder == null){   // tu zmienić bo nie spełnia funkcji
+                if (myOrder.getUserName() == null || comment.getValue() == null){   // tu zmienić bo nie spełnia funkcji
                     return;
                 }
                 myOrder.setComment(comment.getValue());
@@ -204,7 +204,7 @@ public class MyOrderView extends Composite<VerticalLayout>  {
     private void addRateClickListener(Button button){
         button.addClickListener(e -> {
             try {
-                if (myOrder == null){
+                if (myOrder.getUserName() == null || rateSelect.getValue()==null){
                     return;
                 }
                 Object value = rateSelect.getValue();

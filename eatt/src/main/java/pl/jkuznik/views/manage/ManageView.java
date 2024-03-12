@@ -43,7 +43,7 @@ import java.util.function.Supplier;
 @Route(value = "manage", layout = MainLayout.class)
 @RolesAllowed("ADMIN")
 @Uses(Icon.class)
-public class ManageView extends Div/* Composite<VerticalLayout>*/ {
+public class ManageView extends Div {
     private final RestaurantService restaurantService;
     private final InformationService informationService;
     private final MyOrderService myOrderService;
@@ -314,8 +314,13 @@ public class ManageView extends Div/* Composite<VerticalLayout>*/ {
         });
 
     }
-    public void clickAddListener(Button button){
+    private void clickAddListener(Button button){
         button.addClickListener( e -> {
+            if (newRestaurant.getValue().isEmpty()) {
+                Notification n = Notification.show("Musisz podać nazwę restauracji");
+                n.setPosition(Notification.Position.BOTTOM_END);
+                return;
+            }
             List<String> restaurantNames = restaurantService.list().stream()
                     .map(Restaurant::getName)
                     .toList();
