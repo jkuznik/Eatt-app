@@ -17,7 +17,7 @@ In the application, unit tests are included to ensure its functionality and reli
 ## Features
 
 **User authentication** - Each employee has their own account. The accounts are divided into roles: user and admin.
-<br>![login](src/main/resources/login.png)
+<br>![login](src/main/resources/login.png) <br>
 **User account** - Regular users have the ability to order meals for themselves from the list for the next working day. There is also an option to add ratings and comments to meals that have already been fulfilled.
 <br>![menu](src/main/resources/menu.png)
 <br>![myOrder](src/main/resources/myOrder.png)
